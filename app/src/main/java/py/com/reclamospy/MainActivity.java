@@ -1,21 +1,25 @@
 package py.com.reclamospy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import adapter.ViewPagerAdapter;
 import util.SlidingTabLayout;
 /**
  * Created by Edwin on 15/02/2015.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener{
 
     // Declaring Your View and Variables
-
+    ImageButton addButton;
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
@@ -33,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        addButton = (ImageButton)findViewById(R.id.add_icon);
+        addButton.setOnClickListener(this);
 
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
@@ -82,5 +88,14 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(this,"hello world",Toast.LENGTH_LONG);
+        System.out.println("Just");
+        Intent intent = new Intent(this, ReportTypeSelection.class);
+        startActivity(intent);
+
     }
 }
