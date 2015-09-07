@@ -25,7 +25,7 @@ import java.util.HashMap;
 public class Tab1 extends ListFragment {
 
     // URL to get contacts JSON
-    private static String url = "http://192.168.1.7/heatmap/SelectAll_v2.php";
+    private static String url = "http://192.168.2.15/heatmap/SelectAll_v2.php";
 
     // JSON Node names
     private static final String TAG_LATLONGS = "reclamo";
