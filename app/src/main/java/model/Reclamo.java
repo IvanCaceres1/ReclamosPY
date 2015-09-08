@@ -1,12 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Date;
 
 /**
  * Created by ivan on 8/30/15.
  */
-public class Reclamo {
+public class Reclamo implements Serializable {
     private int id;
     private String imei;
     private String lat;

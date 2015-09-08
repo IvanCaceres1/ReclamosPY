@@ -92,10 +92,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this,"hello world",Toast.LENGTH_LONG);
-        System.out.println("Just");
         Intent intent = new Intent(this, ReportTypeSelection.class);
         startActivity(intent);
-
     }
 }
