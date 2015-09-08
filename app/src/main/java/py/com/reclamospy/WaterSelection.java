@@ -30,7 +30,6 @@ public class WaterSelection extends ActionBarActivity implements View.OnClickLis
 
         // Creating The Toolbar and setting it as the Toolbar for the activity
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
-        System.out.println("RECLAMO FROM WATER SELECTION SERIALIZABLE" + reclamo.toString());
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
         sinServicio.setOnClickListener(this);
@@ -68,16 +67,18 @@ public class WaterSelection extends ActionBarActivity implements View.OnClickLis
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.aguasucia:
-                reclamo.setCategoria("AGUA");
+                reclamo.setSubcategoria("AGUA SUCIA");
                 Intent intent = new Intent(this, MapView.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("reclamo",reclamo);
+                intent.putExtras(bundle);
                 startActivity(intent);
-                System.out.println("AUGA PRESSED");
                 break;
             case R.id.aguasinservicio:
-                System.out.println("ENERGIA PRESSED");
+                System.out.println("AGUA SIN SERVICIO PRESSED");
                 break;
             case R.id.aguapocapresion:
-                System.out.println("EMERGENCIA PRESSED");
+                System.out.println("AGUA POCA PRESION PRESSED");
                 break;
         }
 

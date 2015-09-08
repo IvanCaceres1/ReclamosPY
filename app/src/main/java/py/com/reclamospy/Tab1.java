@@ -24,7 +24,7 @@ import java.util.HashMap;
  */
 public class Tab1 extends ListFragment {
 
-    // URL to get contacts JSON
+    // URL to get contacts JSO
     private static String url = "http://192.168.2.15/heatmap/SelectAll_v2.php";
 
     // JSON Node names
@@ -72,13 +72,8 @@ public class Tab1 extends ListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(getActivity());
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
 
-        }
+     }
 
         @Override
         protected Void doInBackground(Void... arg0) {
@@ -168,20 +163,6 @@ public class Tab1 extends ListFragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progresXs dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-            /**
-             * Updating parsed JSON data into ListView
-             * LIST_ITEM_COpy,
-             *
-             ListAdapter adapter = new SimpleAdapter(
-                    getActivity(), latLngList,
-                    R.layout.list_item_copy, new String[] { TAG_LAT, TAG_LONG ,TAG_IMEI,TAG_CATEGORIA,TAG_SUBCATEGORIA,TAG_FECHA}, new int[] { R.id.lat,
-                    R.id.lng,R.id.imei,R.id.categoria,R.id.subcategoria,R.id.fecha});
-
-            setListAdapter(adapter);
-             */
             ListAdapter adapter = new SimpleAdapter(
                     getActivity(), latLngList,
                     R.layout.list_item, new String[] {TAG_ID, TAG_CATEGORIA,TAG_SUBCATEGORIA,TAG_FECHA,TAG_DATE}, new int[] {R.id.id,R.id.categoria,R.id.subcategoria,R.id.elapsedTime,R.id.fecha});

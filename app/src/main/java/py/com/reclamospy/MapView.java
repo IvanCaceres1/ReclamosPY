@@ -1,44 +1,58 @@
 package py.com.reclamospy;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import model.Reclamo;
 
 /**
  * Created by ivan on 9/8/15.
  */
-public class MapView extends ActionBarActivity implements LocationListener{
+public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDragListener,GoogleMap.OnMapLongClickListener,GoogleMap.OnMapClickListener{
     GoogleMap googleMap;
     Toolbar toolbar;
+    Reclamo reclamo;
+    LocationManager locationManager;
+    double lat;
+    double lng;
     @Override
     protected void onCreate(Bundle saveInstanceState){
          super.onCreate(saveInstanceState);
         setContentView(R.layout.map_view);
+        reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
+        lat = -25.516666700000000000;
+        lng = -54.616666699999996000;
+        reclamo.setLng(lat+"");
+        reclamo.setLng(lng+"");
+        System.out.println("Reclamo: "+reclamo.toString());
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        //reclamo.setLat(lat+"");
+        //reclamo.setLng(lng+"");
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(-25.516666700000000000,-54.616666699999996000)));
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-25.516666700000000000,-54.616666699999996000), 4));
-
+        googleMap.setMyLocationEnabled(true);
+        googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat,lng))
+                .draggable(true)
+                .title("Ubicacion del relcamo"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+        googleMap.setOnMarkerDragListener(this);
+        googleMap.setOnMapClickListener(this);
+        googleMap.setOnMapLongClickListener(this);
         setSupportActionBar(toolbar);
     }
 
@@ -65,24 +79,33 @@ public class MapView extends ActionBarActivity implements LocationListener{
     }
 
 
-
     @Override
-    public void onLocationChanged(Location location) {
+    public void onMarkerDragStart(Marker marker) {
 
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    public void onMarkerDrag(Marker marker) {
 
     }
 
     @Override
-    public void onProviderEnabled(String provider) {
-
+    public void onMarkerDragEnd(Marker marker) {
+        LatLng dragPosition = marker.getPosition();
+        double dragLat = dragPosition.latitude;
+        double dragLong = dragPosition.longitude;
+        reclamo.setLat(dragLat+"");
+        reclamo.setLng(dragLong+"");
+        System.out.println("REclamo: "+reclamo.toString());
     }
 
     @Override
-    public void onProviderDisabled(String provider) {
+    public void onMapClick(LatLng latLng) {
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
 
     }
 }
