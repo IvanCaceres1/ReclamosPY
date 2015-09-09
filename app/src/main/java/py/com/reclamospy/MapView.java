@@ -37,7 +37,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
         lat = -25.516666700000000000;
         lng = -54.616666699999996000;
-        reclamo.setLng(lat+"");
+        reclamo.setLat(lat+"");
         reclamo.setLng(lng+"");
         System.out.println("Reclamo: "+reclamo.toString());
         toolbar = (Toolbar) findViewById(R.id.tool_bar);

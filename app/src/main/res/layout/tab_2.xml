@@ -3,8 +3,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+    <com.google.android.gms.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello wordl"/>
+        android:layout_height="match_parent" />
 </LinearLayout>
