@@ -10,11 +10,10 @@
         android:layout_width="match_parent"
         />
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:src="@mipmap/ic_send"
-        android:background="@drawable/circle"
         android:id="@+id/add_send_icon"
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="20dp"
@@ -26,14 +25,13 @@
         android:elevation="@dimen/fab_elevation"
         />
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:src="@mipmap/ic_camera"
-        android:background="@drawable/circle"
         android:id="@+id/add_camera_icon"
-        android:layout_gravity="end|top"
-        android:layout_marginBottom="80dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="83dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

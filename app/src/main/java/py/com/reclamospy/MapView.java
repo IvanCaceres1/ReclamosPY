@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -51,8 +52,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     GoogleMap googleMap;
     Toolbar toolbar;
     Reclamo reclamo;
-    ImageButton cameraBtn;
-    ImageButton sendBtn;
+    FloatingActionButton cameraBtn;
+    FloatingActionButton sendBtn;
     LocationManager locationManager;
     double lat;
     double lng;
@@ -60,9 +61,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     protected void onCreate(Bundle saveInstanceState){
          super.onCreate(saveInstanceState);
         setContentView(R.layout.map_view);
-        cameraBtn = (ImageButton)findViewById(R.id.add_camera_icon);
+        cameraBtn = (FloatingActionButton)findViewById(R.id.add_camera_icon);
         cameraBtn.setOnClickListener(this);
-        sendBtn = (ImageButton)findViewById(R.id.add_send_icon);
+        sendBtn = (FloatingActionButton)findViewById(R.id.add_send_icon);
         sendBtn.setOnClickListener(this);
 
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
@@ -124,6 +125,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         LatLng dragPosition = marker.getPosition();
         double dragLat = dragPosition.latitude;
         double dragLong = dragPosition.longitude;
+        marker.setTitle("Lat: "+dragLat+" Lng: "+dragLong);
         reclamo.setLat(dragLat+"");
         reclamo.setLng(dragLong+"");
         System.out.println("REclamo: "+reclamo.toString());

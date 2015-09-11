@@ -33,11 +33,10 @@
         ></android.support.v4.view.ViewPager>
 
 
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:src="@mipmap/ic_action"
-        android:background="@drawable/circle"
         android:id="@+id/add_icon"
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="20dp"

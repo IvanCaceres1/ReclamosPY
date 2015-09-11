@@ -2,6 +2,7 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +20,7 @@ import util.SlidingTabLayout;
 public class MainActivity extends ActionBarActivity implements View.OnClickListener{
 
     // Declaring Your View and Variables
-    ImageButton addButton;
+    FloatingActionButton addButton;
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
@@ -37,7 +38,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        addButton = (ImageButton)findViewById(R.id.add_icon);
+        addButton = (FloatingActionButton)findViewById(R.id.add_icon);
         addButton.setOnClickListener(this);
 
 
