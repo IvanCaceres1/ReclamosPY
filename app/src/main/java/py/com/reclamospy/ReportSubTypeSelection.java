@@ -17,7 +17,7 @@ import util.SlidingTabLayout;
 /**
  * Created by ivan on 9/6/15.
  */
-public class WaterSelection extends ActionBarActivity implements View.OnClickListener {
+public class ReportSubTypeSelection extends ActionBarActivity implements View.OnClickListener {
     Toolbar toolbar;
     Reclamo reclamo;
     ImageButton sinServicio;
@@ -26,10 +26,15 @@ public class WaterSelection extends ActionBarActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.water_selection);
-
         // Creating The Toolbar and setting it as the Toolbar for the activity
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
+        if  (reclamo.getCategoria().equals("AGUA")) {
+            setContentView(R.layout.water_selection);
+        }else if (reclamo.getCategoria().equals("ENERGIA")){
+            setContentView(R.layout.energy_selection);
+        }else if (reclamo.getCategoria().equals("VIA PUBLICA")){
+            setContentView(R.layout.incident_selection);
+        }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
         sinServicio.setOnClickListener(this);

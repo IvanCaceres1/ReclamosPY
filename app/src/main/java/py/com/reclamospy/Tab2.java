@@ -38,7 +38,7 @@ import model.Reclamo;
  * Created by Edwin on 15/02/2015.
  */
 public class Tab2 extends Fragment {
-    private static String url = "http://10.2.2.102/heatmap/SelectAll_v2.php";
+    private static String url = "http://192.168.1.9/heatmap/SelectAll_v2.php";
 
     // JSON Node names
     private static final String TAG_LATLONGS = "reclamo";
@@ -179,12 +179,6 @@ public class Tab2 extends Fragment {
                             new LatLng(latitude, longitude)).title("Energia");
                     marker.icon(BitmapDescriptorFactory
                             .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    googleMap.addMarker(marker);
-                }else if (reclamo.getCategoria().equals("EMERGENCIAS")){
-                    MarkerOptions marker = new MarkerOptions().position(
-                            new LatLng(latitude, longitude)).title("Emergencia");
-                    marker.icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_RED));
                     googleMap.addMarker(marker);
                 }else if (reclamo.getCategoria().equals("VIA PUBLICA")){
                     MarkerOptions marker = new MarkerOptions().position(

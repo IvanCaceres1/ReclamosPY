@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity  android:name=".ReportTypeSelection"  android:screenOrientation="portrait" />
-        <activity  android:name=".WaterSelection"  android:screenOrientation="portrait" />
+        <activity  android:name=".ReportSubTypeSelection"  android:screenOrientation="portrait" />
         <activity  android:name=".MapView"  android:screenOrientation="portrait" />
 
     </application>
