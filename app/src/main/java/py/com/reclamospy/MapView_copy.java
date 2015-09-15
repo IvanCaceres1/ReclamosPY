@@ -2,7 +2,6 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -34,20 +33,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 
 import model.Reclamo;
 
 /**
  * Created by ivan on 9/8/15.
  */
-public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDragListener,GoogleMap.OnMapLongClickListener,GoogleMap.OnMapClickListener, View.OnClickListener{
+public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarkerDragListener,GoogleMap.OnMapLongClickListener,GoogleMap.OnMapClickListener, View.OnClickListener{
     GoogleMap googleMap;
     Toolbar toolbar;
     Reclamo reclamo;
     FloatingActionButton cameraBtn;
     FloatingActionButton sendBtn;
-    LocationManager locationManager;
     double lat;
     double lng;
     @Override
@@ -65,6 +62,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         reclamo.setLat(lat + "");
         reclamo.setLng(lng + "");
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        //reclamo.setLat(lat+"");
+        //reclamo.setLng(lng+"");
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
         googleMap.addMarker(new MarkerOptions()
@@ -147,14 +146,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (requestCode == 2 && resultCode == RESULT_OK){
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-            /*    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG,100,bos);
                 byte[] bArray = bos.toByteArray();
-            try {
-                reclamo.getFoto().setBytes(1,bArray);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }*/
+
+            System.out.println("Photo byte array: "+bArray.toString());
         }
     }
 

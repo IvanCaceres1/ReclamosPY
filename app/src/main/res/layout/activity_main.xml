@@ -31,22 +31,5 @@
         android:layout_alignParentBottom="true"
 
         ></android.support.v4.view.ViewPager>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:src="@mipmap/ic_action"
-        android:id="@+id/add_icon"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="51dp"
-        android:elevation="@dimen/fab_elevation"
-        />
-
     </RelativeLayout>
 </LinearLayout>

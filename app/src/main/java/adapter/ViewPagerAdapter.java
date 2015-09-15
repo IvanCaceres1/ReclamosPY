@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import py.com.reclamospy.Tab1;
 import py.com.reclamospy.Tab2;
+import py.com.reclamospy.Tab3;
 
 /**
  * Created by Edwin on 15/02/2015.
@@ -35,8 +36,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             Tab1 tab1 = new Tab1();
             return tab1;
         }
-        else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
+        else if (position == 1)             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
         {
+            Tab3 tab3= new Tab3();
+            return tab3;
+        }else{
             Tab2 tab2 = new Tab2();
             return tab2;
         }

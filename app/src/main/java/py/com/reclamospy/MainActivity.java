@@ -2,16 +2,12 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
 import adapter.ViewPagerAdapter;
 import util.SlidingTabLayout;
 /**
@@ -19,14 +15,12 @@ import util.SlidingTabLayout;
  */
 public class MainActivity extends ActionBarActivity implements View.OnClickListener{
 
-    // Declaring Your View and Variables
-    FloatingActionButton addButton;
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"Reclamos","Mapa"};
-    int Numboftabs =2;
+    CharSequence Titles[]={"Lista","Reclamo","Mapa"};
+    int Numboftabs =3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +32,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        addButton = (FloatingActionButton)findViewById(R.id.add_icon);
-        addButton.setOnClickListener(this);
-
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
 
+
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
-
+        pager.setCurrentItem(1);
         // Assiging the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
