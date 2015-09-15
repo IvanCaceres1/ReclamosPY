@@ -25,20 +25,20 @@ import java.util.HashMap;
 public class Tab1 extends ListFragment {
 
     // URL to get contacts JSO
-    private static String url = "http://10.2.2.102/heatmap/SelectAll_v2.php";
+    private static String url = "http://yoreporto.org/SelectAll_v2.php";
 
     // JSON Node names
     private static final String TAG_LATLONGS = "reclamo";
 
-    private static final String TAG_ID = "id";
-    private static final String TAG_IMEI = "imei";
-    private static final String TAG_LAT = "lat";
-    private static final String TAG_LONG = "long";
-    private static final String TAG_CATEGORIA= "categoria";
-    private static final String TAG_SUBCATEGORIA = "subcategoria";
+    private static final String TAG_ID = "reporte_id";
+    private static final String TAG_IMEI = "IMEI";
+    private static final String TAG_LAT = "latitud";
+    private static final String TAG_LONG = "longitud";
+    private static final String TAG_CATEGORIA= "RP_Category";
+    private static final String TAG_SUBCATEGORIA = "RP_Group";
     private static final String TAG_FECHA = "fecha";
-    private static final String TAG_DATE = "date";
-    private static final String TAG_FOTO = "foto";
+    private static final String TAG_DATE = "Created";
+    private static final String TAG_FOTO = "Img";
     private ProgressDialog pDialog;
 
     // contacts JSONArray
@@ -113,7 +113,7 @@ public class Tab1 extends ListFragment {
                         reclamo.put(TAG_IMEI,imei);
                         reclamo.put(TAG_CATEGORIA,categoria);
                         reclamo.put(TAG_SUBCATEGORIA,subcategoria);
-                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                         Date d = newDateFormat.parse(fecha);
                         reclamo.put(TAG_FECHA,calculateElapsedTime(d));
                         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
