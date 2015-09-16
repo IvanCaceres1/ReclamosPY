@@ -2,6 +2,7 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Blob;
 import java.sql.SQLException;
 
 import model.Reclamo;
@@ -67,14 +69,35 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
+
+
+
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat,lng))
                 .draggable(true)
                 .title("Ubicacion del relcamo"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 13));
+
         googleMap.setOnMarkerDragListener(this);
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMapLongClickListener(this);
+        Toast.makeText(getBaseContext(), "Picture! inicio", Toast.LENGTH_LONG).show();
+
+        if (googleMap!= null) {
+
+
+            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+                @Override
+                public void onMyLocationChange(Location arg0) {
+                    // TODO Auto-generated method stub
+                    googleMap.clear();
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                }
+            });
+
+        }
         setSupportActionBar(toolbar);
     }
 
@@ -139,7 +162,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
                  startActivityForResult(takePictureIntent,2);
                  break;
             case R.id.add_send_icon:
-                new HttpAsyncTask().execute("http://192.168.2.15/jsonservlet");
+                new HttpAsyncTask().execute("http://192.168.1.107/");
                 break;
         }
 
@@ -147,10 +170,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (requestCode == 2 && resultCode == RESULT_OK){
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-            /*    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG,100,bos);
                 byte[] bArray = bos.toByteArray();
-            try {
+//                reclamo.setFoto(B);
+            Toast.makeText(getBaseContext(), "Picture: "+bArray.toString(), Toast.LENGTH_LONG).show();
+
+            /*try {
                 reclamo.getFoto().setBytes(1,bArray);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -173,16 +199,17 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("categoria", reclamo.getCategoria());
+            jsonObject.accumulate("RP_Category", reclamo.getCategoria());
             jsonObject.accumulate("fecha", reclamo.getFecha());
-            jsonObject.accumulate("lat", reclamo.getLng());
-            jsonObject.accumulate("lng",reclamo.getLng());
+            jsonObject.accumulate("latitud", reclamo.getLat());
+            jsonObject.accumulate("longitud",reclamo.getLng());
             jsonObject.accumulate("imei",reclamo.getImei());
-            jsonObject.accumulate("subcategoria",reclamo.getSubcategoria());
-            jsonObject.accumulate("foto",reclamo.getFoto());
+            jsonObject.accumulate("RP_Group",reclamo.getSubcategoria());
+            jsonObject.accumulate("img",reclamo.getFoto());
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
+            System.out.println("Json Object POST :"+json);
 
             // ** Alternative way to convert Person object to JSON string usin Jackson Lib
             // ObjectMapper mapper = new ObjectMapper();

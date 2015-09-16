@@ -78,6 +78,7 @@ public class Tab2 extends Fragment {
         }
 
         googleMap = mMapView.getMap();
+        googleMap.setMyLocationEnabled(true);
         // latitude and longitude
 
         // Perform any camera updates here
