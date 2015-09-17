@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         />
-
     <fragment
         android:id="@+id/map"
         android:layout_below="@id/tool_bar"

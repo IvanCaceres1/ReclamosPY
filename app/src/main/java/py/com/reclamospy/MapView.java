@@ -2,6 +2,8 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -35,19 +37,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Locale;
 
 import model.Reclamo;
 
 /**
  * Created by ivan on 9/8/15.
  */
-public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDragListener,GoogleMap.OnMapLongClickListener,GoogleMap.OnMapClickListener, View.OnClickListener{
+public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener{
     GoogleMap googleMap;
+    byte[] bArray;
     Toolbar toolbar;
     Reclamo reclamo;
+    List<Address> addresses;
     FloatingActionButton cameraBtn;
     FloatingActionButton sendBtn;
     LocationManager locationManager;
+    Geocoder geocoder;
     double lat;
     double lng;
     boolean isFirsChangeListen;
@@ -64,13 +71,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
         lat = -25.516666700000000000;
         lng = -54.616666699999996000;
+
         reclamo.setLat(lat + "");
         reclamo.setLng(lng + "");
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
-
-
 
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat,lng))
@@ -78,11 +84,22 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
                 .title("Ubicacion del relcamo"));
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 13));
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+              addresses = geocoder.getFromLocation(lat,lng,1);
+            if (addresses.size() > 0){
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        googleMap.setOnMarkerDragListener(this);
+
         googleMap.setOnMapClickListener(this);
-        googleMap.setOnMapLongClickListener(this);
-        Toast.makeText(getBaseContext(), "Picture! inicio", Toast.LENGTH_LONG).show();
 
         if (googleMap!= null) {
 
@@ -98,8 +115,18 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
                         reclamo.setLat(arg0.getLatitude() + "");
                         reclamo.setLng(arg0.getLongitude() + "");
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(arg0.getLatitude(), arg0.getLongitude()), 13));
-
-                        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+                        try {
+                            addresses = geocoder.getFromLocation(arg0.getLatitude(),arg0.getLongitude(),1);
+                            if (addresses.size() > 0){
+                                String address = addresses.get(0).getAddressLine(0);
+                                String city = addresses.get(0).getLocality();
+                                String state = addresses.get(0).getAdminArea();
+                                String country = addresses.get(0).getCountryName();
+                                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         isFirsChangeListen = false;
                     }
 
@@ -132,27 +159,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        LatLng dragPosition = marker.getPosition();
-        double dragLat = dragPosition.latitude;
-        double dragLong = dragPosition.longitude;
-        marker.setTitle("Imei:"+reclamo.getImei()+" Image: "+reclamo.getFoto());
-        reclamo.setLat(dragLat+"");
-        reclamo.setLng(dragLong+"");
-    }
-
     @Override
     public void onMapClick(LatLng latLng) {
 
@@ -160,14 +166,20 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
         googleMap.addMarker(new MarkerOptions().position(new LatLng(latLng.latitude, latLng.longitude)).title("It's Me!"));
         reclamo.setLat(latLng.latitude+ "");
         reclamo.setLng(latLng.longitude + "");
-        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+        try {
+            addresses = geocoder.getFromLocation(latLng.latitude,latLng.longitude,1);
+            if (addresses.size() > 0){
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         isFirsChangeListen = false;
         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-    }
-
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-
     }
 
     @Override
@@ -188,7 +200,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG,100,bos);
-            byte[] bArray = bos.toByteArray();
+           bArray = bos.toByteArray();
 
 //                reclamo.setFoto(B);
             Toast.makeText(getBaseContext(), "Picture: "+photo.toString(), Toast.LENGTH_LONG).show();
