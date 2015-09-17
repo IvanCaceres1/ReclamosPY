@@ -35,8 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.Blob;
-import java.sql.SQLException;
 
 import model.Reclamo;
 
@@ -52,10 +50,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     LocationManager locationManager;
     double lat;
     double lng;
+    boolean isFirsChangeListen;
     @Override
     protected void onCreate(Bundle saveInstanceState){
-         super.onCreate(saveInstanceState);
+        super.onCreate(saveInstanceState);
         setContentView(R.layout.map_view);
+        isFirsChangeListen = true;
         cameraBtn = (FloatingActionButton)findViewById(R.id.add_camera_icon);
         cameraBtn.setOnClickListener(this);
         sendBtn = (FloatingActionButton)findViewById(R.id.add_send_icon);
@@ -92,8 +92,17 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
                 @Override
                 public void onMyLocationChange(Location arg0) {
                     // TODO Auto-generated method stub
-                    googleMap.clear();
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                    if (isFirsChangeListen) {
+                        googleMap.clear();
+                        googleMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                        reclamo.setLat(arg0.getLatitude() + "");
+                        reclamo.setLng(arg0.getLongitude() + "");
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(arg0.getLatitude(), arg0.getLongitude()), 13));
+
+                        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+                        isFirsChangeListen = false;
+                    }
+
                 }
             });
 
@@ -146,6 +155,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
 
     @Override
     public void onMapClick(LatLng latLng) {
+
+        googleMap.clear();
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(latLng.latitude, latLng.longitude)).title("It's Me!"));
+        reclamo.setLat(latLng.latitude+ "");
+        reclamo.setLng(latLng.longitude + "");
+        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+        isFirsChangeListen = false;
         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
@@ -158,9 +174,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.add_camera_icon:
-                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                 startActivityForResult(takePictureIntent,2);
-                 break;
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent,2);
+                break;
             case R.id.add_send_icon:
                 new HttpAsyncTask().execute("http://192.168.1.107/");
                 break;
@@ -169,12 +185,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMarkerDrag
     }
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (requestCode == 2 && resultCode == RESULT_OK){
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.PNG,100,bos);
-                byte[] bArray = bos.toByteArray();
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.PNG,100,bos);
+            byte[] bArray = bos.toByteArray();
+
 //                reclamo.setFoto(B);
-            Toast.makeText(getBaseContext(), "Picture: "+bArray.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Picture: "+photo.toString(), Toast.LENGTH_LONG).show();
+
 
             /*try {
                 reclamo.getFoto().setBytes(1,bArray);

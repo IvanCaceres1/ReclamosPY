@@ -2,6 +2,8 @@ package py.com.reclamospy;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -45,12 +47,15 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
     Reclamo reclamo;
     FloatingActionButton cameraBtn;
     FloatingActionButton sendBtn;
+    LocationManager locationManager;
     double lat;
     double lng;
+    boolean isFirsChangeListen;
     @Override
     protected void onCreate(Bundle saveInstanceState){
          super.onCreate(saveInstanceState);
         setContentView(R.layout.map_view);
+        isFirsChangeListen = true;
         cameraBtn = (FloatingActionButton)findViewById(R.id.add_camera_icon);
         cameraBtn.setOnClickListener(this);
         sendBtn = (FloatingActionButton)findViewById(R.id.add_send_icon);
@@ -62,18 +67,46 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
         reclamo.setLat(lat + "");
         reclamo.setLng(lng + "");
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        //reclamo.setLat(lat+"");
-        //reclamo.setLng(lng+"");
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
+
+
+
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(lat,lng))
                 .draggable(true)
                 .title("Ubicacion del relcamo"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 13));
+
         googleMap.setOnMarkerDragListener(this);
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMapLongClickListener(this);
+        Toast.makeText(getBaseContext(), "Picture! inicio", Toast.LENGTH_LONG).show();
+
+        if (googleMap!= null) {
+
+
+            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
+                @Override
+                public void onMyLocationChange(Location arg0) {
+                    // TODO Auto-generated method stub
+                    if (isFirsChangeListen) {
+                        googleMap.clear();
+                        googleMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
+                        reclamo.setLat(arg0.getLatitude() + "");
+                        reclamo.setLng(arg0.getLongitude() + "");
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(arg0.getLatitude(), arg0.getLongitude()), 13));
+
+                        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+                        isFirsChangeListen = false;
+                    }
+
+                }
+            });
+
+        }
         setSupportActionBar(toolbar);
     }
 
@@ -122,6 +155,13 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
 
     @Override
     public void onMapClick(LatLng latLng) {
+
+        googleMap.clear();
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(latLng.latitude, latLng.longitude)).title("It's Me!"));
+        reclamo.setLat(latLng.latitude+ "");
+        reclamo.setLng(latLng.longitude + "");
+        Toast.makeText(getBaseContext(), "Lat+Lng: " + reclamo.getLat() + " " + reclamo.getLng(), Toast.LENGTH_LONG).show();
+        isFirsChangeListen = false;
         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
@@ -138,7 +178,7 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
                  startActivityForResult(takePictureIntent,2);
                  break;
             case R.id.add_send_icon:
-                new HttpAsyncTask().execute("http://192.168.2.15/jsonservlet");
+                new HttpAsyncTask().execute("http://192.168.1.107/");
                 break;
         }
 
@@ -150,7 +190,15 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
                 photo.compress(Bitmap.CompressFormat.PNG,100,bos);
                 byte[] bArray = bos.toByteArray();
 
-            System.out.println("Photo byte array: "+bArray.toString());
+//                reclamo.setFoto(B);
+                Toast.makeText(getBaseContext(), "Picture: "+photo.toString(), Toast.LENGTH_LONG).show();
+
+
+            /*try {
+                reclamo.getFoto().setBytes(1,bArray);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }*/
         }
     }
 
@@ -169,16 +217,17 @@ public class MapView_copy extends ActionBarActivity implements GoogleMap.OnMarke
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("categoria", reclamo.getCategoria());
+            jsonObject.accumulate("RP_Category", reclamo.getCategoria());
             jsonObject.accumulate("fecha", reclamo.getFecha());
-            jsonObject.accumulate("lat", reclamo.getLng());
-            jsonObject.accumulate("lng",reclamo.getLng());
+            jsonObject.accumulate("latitud", reclamo.getLat());
+            jsonObject.accumulate("longitud",reclamo.getLng());
             jsonObject.accumulate("imei",reclamo.getImei());
-            jsonObject.accumulate("subcategoria",reclamo.getSubcategoria());
-            jsonObject.accumulate("foto",reclamo.getFoto());
+            jsonObject.accumulate("RP_Group",reclamo.getSubcategoria());
+            jsonObject.accumulate("img",reclamo.getFoto());
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
+            System.out.println("Json Object POST :"+json);
 
             // ** Alternative way to convert Person object to JSON string usin Jackson Lib
             // ObjectMapper mapper = new ObjectMapper();
