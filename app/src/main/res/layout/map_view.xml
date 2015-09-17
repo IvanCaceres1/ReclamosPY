@@ -12,35 +12,36 @@
         android:layout_width="match_parent"
         />
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:src="@mipmap/ic_send"
-        android:id="@+id/add_send_icon"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="50dp"
-        />
-
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:src="@mipmap/ic_camera"
-        android:id="@+id/add_camera_icon"
-        android:layout_marginBottom="83dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="50dp"
-        />
     <fragment
         android:id="@+id/map"
         android:layout_below="@id/tool_bar"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+        android:layout_width="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@mipmap/ic_send"
+            android:id="@+id/add_send_icon"
+            android:layout_marginTop="430dp"
+            android:layout_marginLeft="280dp"
+            android:layout_marginStart="280dp"
+
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="370dp"
+            android:src="@mipmap/ic_camera"
+            android:id="@+id/add_camera_icon"
+            android:layout_marginLeft="280dp"
+            android:layout_marginStart="280dp"
+            />
+
+
+        </fragment>
 
 </RelativeLayout>
 
