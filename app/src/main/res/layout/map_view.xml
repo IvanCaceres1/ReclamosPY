@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         />
+
     <fragment
         android:id="@+id/map"
         android:layout_below="@id/tool_bar"
@@ -33,12 +34,21 @@
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_marginTop="370dp"
-            android:src="@mipmap/ic_camera"
-            android:id="@+id/add_camera_icon"
-            android:layout_marginLeft="280dp"
-            android:layout_marginStart="280dp"
+            android:src="@mipmap/ic_upload"
+            android:id="@+id/add_upload_icon"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="200dp"
             />
 
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="430dp"
+            android:src="@mipmap/ic_camera"
+            android:id="@+id/add_camera_icon"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="200dp"
+            />
 
         </fragment>
 

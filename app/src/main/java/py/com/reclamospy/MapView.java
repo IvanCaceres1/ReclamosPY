@@ -1,11 +1,13 @@
 package py.com.reclamospy;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,21 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,54 +44,72 @@ import model.Reclamo;
 /**
  * Created by ivan on 9/8/15.
  */
-public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener{
-    GoogleMap googleMap;
-    byte[] bArray;
-    Toolbar toolbar;
-    Reclamo reclamo;
-    List<Address> addresses;
-    FloatingActionButton cameraBtn;
-    FloatingActionButton sendBtn;
-    LocationManager locationManager;
+public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, GoogleMap.OnMyLocationChangeListener{
+    private GoogleMap googleMap;
+    private byte[] bArray;
+    private Toolbar toolbar;
+    private float markerColor;
+    private Reclamo reclamo;
+    //Reverse geocoding addressess result
+    private List<Address> addresses;
     Geocoder geocoder;
-    double lat;
-    double lng;
+    static final double DEFAULT_LATITUDE = -25.516666700000000000;
+    static final double DEFAULT_LONGITUDE= -54.616666699999996000;
+    //Set marker at currrent position and set location change listener to null
     boolean isFirsChangeListen;
+    private FloatingActionButton cameraBtn,sendBtn,uploadBtn;
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
         setContentView(R.layout.map_view);
         isFirsChangeListen = true;
+
         cameraBtn = (FloatingActionButton)findViewById(R.id.add_camera_icon);
         cameraBtn.setOnClickListener(this);
+
         sendBtn = (FloatingActionButton)findViewById(R.id.add_send_icon);
         sendBtn.setOnClickListener(this);
 
-        reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
-        lat = -25.516666700000000000;
-        lng = -54.616666699999996000;
+        uploadBtn = (FloatingActionButton)findViewById(R.id.add_upload_icon);
+        uploadBtn.setOnClickListener(this);
 
-        reclamo.setLat(lat + "");
-        reclamo.setLng(lng + "");
+        //Obtain reclamo Object from SubCategory activity
+        reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
+        reclamo.setLat(DEFAULT_LATITUDE + "");
+        reclamo.setLng(DEFAULT_LONGITUDE + "");
+        if (reclamo.getCategoria().equals("AGUA")){
+            markerColor = BitmapDescriptorFactory.HUE_BLUE;
+        }else if  (reclamo.getCategoria().equals("ENERGIA")){
+            markerColor = BitmapDescriptorFactory.HUE_YELLOW;
+        }else{
+            markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
+        }
+
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(lat,lng))
-                .draggable(true)
-                .title("Ubicacion del relcamo"));
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 13));
+        //Obtain address from lat,lng
         geocoder = new Geocoder(this, Locale.getDefault());
         try {
-              addresses = geocoder.getFromLocation(lat,lng,1);
+              addresses = geocoder.getFromLocation(DEFAULT_LATITUDE,DEFAULT_LONGITUDE,1);
             if (addresses.size() > 0){
                 String address = addresses.get(0).getAddressLine(0);
                 String city = addresses.get(0).getLocality();
                 String state = addresses.get(0).getAdminArea();
                 String country = addresses.get(0).getCountryName();
-                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+                String know = addresses.get(0).getFeatureName();
+                googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(DEFAULT_LATITUDE,DEFAULT_LONGITUDE))
+                        .draggable(true)
+                        .title(know+" , "+address+" , "+city+" , "+
+                                 country)
+                        .icon(BitmapDescriptorFactory
+                        .defaultMarker(markerColor)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
+
+                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,37 +119,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         googleMap.setOnMapClickListener(this);
 
         if (googleMap!= null) {
-
-
-            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-
-                @Override
-                public void onMyLocationChange(Location arg0) {
-                    // TODO Auto-generated method stub
-                    if (isFirsChangeListen) {
-                        googleMap.clear();
-                        googleMap.addMarker(new MarkerOptions().position(new LatLng(arg0.getLatitude(), arg0.getLongitude())).title("It's Me!"));
-                        reclamo.setLat(arg0.getLatitude() + "");
-                        reclamo.setLng(arg0.getLongitude() + "");
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(arg0.getLatitude(), arg0.getLongitude()), 13));
-                        try {
-                            addresses = geocoder.getFromLocation(arg0.getLatitude(),arg0.getLongitude(),1);
-                            if (addresses.size() > 0){
-                                String address = addresses.get(0).getAddressLine(0);
-                                String city = addresses.get(0).getLocality();
-                                String state = addresses.get(0).getAdminArea();
-                                String country = addresses.get(0).getCountryName();
-                                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        isFirsChangeListen = false;
-                    }
-
-                }
-            });
-
+            googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
     }
@@ -163,8 +150,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     public void onMapClick(LatLng latLng) {
 
         googleMap.clear();
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(latLng.latitude, latLng.longitude)).title("It's Me!"));
-        reclamo.setLat(latLng.latitude+ "");
+        reclamo.setLat(latLng.latitude + "");
         reclamo.setLng(latLng.longitude + "");
         try {
             addresses = geocoder.getFromLocation(latLng.latitude,latLng.longitude,1);
@@ -173,7 +159,16 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 String city = addresses.get(0).getLocality();
                 String state = addresses.get(0).getAdminArea();
                 String country = addresses.get(0).getCountryName();
-                Toast.makeText(getBaseContext(), address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+                String know = addresses.get(0).getFeatureName();
+                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+                googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(latLng.latitude,latLng.longitude))
+                        .draggable(true)
+                        .title(know+" , "+address+" , "+city+" , "+
+                                country)
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(markerColor)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 13));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -192,25 +187,39 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             case R.id.add_send_icon:
                 new HttpAsyncTask().execute("http://192.168.1.107/");
                 break;
+            case R.id.add_upload_icon:
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent,1);
         }
 
     }
     public void onActivityResult(int requestCode,int resultCode,Intent data){
-        if (requestCode == 2 && resultCode == RESULT_OK){
+        if (requestCode == 2 && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG,100,bos);
-           bArray = bos.toByteArray();
+            photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            bArray = bos.toByteArray();
+            reclamo.setFoto(bArray);
+            Toast.makeText(getBaseContext(), "TAKE: "+reclamo.toString(), Toast.LENGTH_LONG).show();
+        }else if (requestCode == 1 && resultCode == RESULT_OK){
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-//                reclamo.setFoto(B);
-            Toast.makeText(getBaseContext(), "Picture: "+photo.toString(), Toast.LENGTH_LONG).show();
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
 
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
 
-            /*try {
-                reclamo.getFoto().setBytes(1,bArray);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }*/
+            Bitmap mBitmap = BitmapFactory.decodeFile(picturePath);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] imageInByte = stream.toByteArray();
+            reclamo.setFoto(imageInByte);
+            Toast.makeText(getBaseContext(), "UPLOAD: "+reclamo.toString(), Toast.LENGTH_LONG).show();
+            cursor.close();
         }
     }
 
@@ -286,6 +295,39 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         return result;
 
     }
+
+    @Override
+    public void onMyLocationChange(Location location) {
+        if (isFirsChangeListen) {
+            googleMap.clear();
+            reclamo.setLat(location.getLatitude() + "");
+            reclamo.setLng(location.getLongitude() + "");
+            try {
+                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    String address = addresses.get(0).getAddressLine(0);
+                    String city = addresses.get(0).getLocality();
+                    String state = addresses.get(0).getAdminArea();
+                    String country = addresses.get(0).getCountryName();
+                    String know = addresses.get(0).getFeatureName();
+                    Toast.makeText(getBaseContext(), know + " , " + address + " , " + city + " , " + state + " , " + country, Toast.LENGTH_LONG).show();
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                            .draggable(true)
+                            .title(know + " , " + address + " , " + city + " , " +
+                                    country)
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor)));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            isFirsChangeListen = false;
+        }
+
+    }
+
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override

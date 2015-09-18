@@ -36,10 +36,13 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
             setContentView(R.layout.incident_selection);
         }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
+
         sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
         sinServicio.setOnClickListener(this);
+
         aguaSucia = (ImageButton)findViewById(R.id.aguasucia);
         aguaSucia.setOnClickListener(this);
+
         pocaPresion = (ImageButton)findViewById(R.id.aguapocapresion);
         pocaPresion.setOnClickListener(this);
         setSupportActionBar(toolbar);

@@ -15,10 +15,10 @@ public class Reclamo implements Serializable {
     private String categoria;
     private String subcategoria;
     private Date fecha;
-    private Blob foto;
+    private byte[] foto;
 
     public Reclamo(){}
-    public Reclamo(int id, String imei, String lat, String lng, String categoria, String subcategoria, Blob foto, Date fecha) {
+    public Reclamo(int id, String imei, String lat, String lng, String categoria, String subcategoria, byte[] foto, Date fecha) {
         this.id = id;
         this.imei = imei;
         this.lat = lat;
@@ -69,11 +69,11 @@ public class Reclamo implements Serializable {
         this.categoria = categoria;
     }
 
-    public Blob getFoto() {
+    public byte[] getFoto() {
         return foto;
     }
 
-    public void setFoto(Blob foto) {
+    public void setFoto(byte[] foto) {
         this.foto = foto;
     }
 
