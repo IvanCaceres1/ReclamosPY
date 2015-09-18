@@ -39,6 +39,9 @@
         <activity  android:name=".ReportTypeSelection"  android:screenOrientation="portrait" />
         <activity  android:name=".ReportSubTypeSelection"  android:screenOrientation="portrait" />
         <activity  android:name=".MapView"  android:screenOrientation="portrait" />
+        <activity  android:name=".ImageButtonActivity"  android:screenOrientation="portrait" />
+
+
 
     </application>
 </manifest>

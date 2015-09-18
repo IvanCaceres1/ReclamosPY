@@ -185,7 +185,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 startActivityForResult(takePictureIntent,2);
                 break;
             case R.id.add_send_icon:
-                new HttpAsyncTask().execute("http://192.168.1.107/");
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("reclamo",reclamo);
+                Intent intent2 = new Intent(this, ImageButtonActivity.class);
+                intent2.putExtras(bundle);
+                startActivity(intent2);
+                //new HttpAsyncTask().execute("http://192.168.1.107/");
                 break;
             case R.id.add_upload_icon:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
