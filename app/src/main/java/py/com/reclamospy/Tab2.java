@@ -1,5 +1,7 @@
 package py.com.reclamospy;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,8 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
+import android.widget.Toast;
+
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -83,9 +85,27 @@ public class Tab2 extends Fragment {
 
         // Perform any camera updates here
         //setSupportActionBar(toolbar);
-        new GetContacts().execute();
+        if (checkNetwork()) {
+            new GetContacts().execute();
+        }else{
+            Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
         return v;
     }
+    /*
+    *  Check network availability and connected
+    */
+    public boolean checkNetwork(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -193,7 +213,6 @@ public class Tab2 extends Fragment {
                     .target(new LatLng(latDefault, longDefault)).zoom(15).build();
             googleMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
-
         }
 
     }

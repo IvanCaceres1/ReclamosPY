@@ -1,6 +1,8 @@
 package py.com.reclamospy;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,8 +64,25 @@ public class Tab1 extends ListFragment {
         latLngList = new ArrayList<HashMap<String, String>>();
 
         setRetainInstance(true);
+        if (checkNetwork()) {
             new GetContacts().execute();
+        }else{
+            Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
+    }
 
+    /*
+     *  Check network availability and connected
+     */
+    public boolean checkNetwork(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * Async task class to get json by making HTTP call
@@ -168,7 +188,6 @@ public class Tab1 extends ListFragment {
                     R.layout.list_item, new String[] {TAG_ID, TAG_CATEGORIA,TAG_SUBCATEGORIA,TAG_FECHA,TAG_DATE}, new int[] {R.id.id,R.id.categoria,R.id.subcategoria,R.id.elapsedTime,R.id.fecha});
 
             setListAdapter(adapter);
-
         }
 
     }

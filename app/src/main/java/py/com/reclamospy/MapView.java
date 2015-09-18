@@ -205,7 +205,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
             bArray = bos.toByteArray();
-            reclamo.setFoto(bArray);
+            reclamo.setFoto (bArray);
             Toast.makeText(getBaseContext(), "TAKE: "+reclamo.toString(), Toast.LENGTH_LONG).show();
         }else if (requestCode == 1 && resultCode == RESULT_OK){
             Uri selectedImage = data.getData();

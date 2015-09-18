@@ -1,6 +1,8 @@
 package py.com.reclamospy;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -10,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
 import adapter.ViewPagerAdapter;
 import util.SlidingTabLayout;
 /**
@@ -52,14 +56,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             @Override
             public int getIndicatorColor(int position) {
                 return getResources().getColor(R.color.tabsScrollColor);
+
             }
         });
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-
-
-
     }
 
 

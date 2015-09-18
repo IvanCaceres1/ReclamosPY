@@ -29,8 +29,10 @@ public class ImageButtonActivity extends ActionBarActivity{
         setContentView(R.layout.image_button_layout);
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
         image = (ImageView)findViewById(R.id.imageView);
-        Bitmap bMap = BitmapFactory.decodeByteArray(reclamo.getFoto(), 0, reclamo.getFoto().length);
-        image.setImageBitmap(bMap);
+        if (reclamo.getFoto() != null) {
+            Bitmap bMap = BitmapFactory.decodeByteArray(reclamo.getFoto(), 0, reclamo.getFoto().length);
+            image.setImageBitmap(bMap);
+        }
     }
 
 
