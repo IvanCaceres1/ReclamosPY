@@ -1,7 +1,9 @@
 package py.com.reclamospy;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,13 +11,16 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -98,6 +103,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
         obtainAddressFromGPS();
 
+        checkForLocationService();
+
         if (!checkNetwork()) {
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
@@ -109,6 +116,27 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
+    }
+
+    public void checkForLocationService(){
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            // Build the alert dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Location Services Not Active");
+            builder.setMessage("Please enable Location Services and GPS");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Show location settings when the user acknowledges the alert dialog
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+            });
+            Dialog alertDialog = builder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
     }
 
     public boolean checkNetwork(){
