@@ -34,16 +34,20 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -218,10 +222,10 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             case R.id.add_send_icon:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("reclamo",reclamo);
-                Intent intent2 = new Intent(this, ImageButtonActivity.class);
-                intent2.putExtras(bundle);
-                startActivity(intent2);
-                //new HttpAsyncTask().execute("http://192.168.1.107/");
+               // Intent intent2 = new Intent(this, ImageButtonActivity.class);
+               /// intent2.putExtras(bundle);
+               // startActivity(intent2);
+                new HttpAsyncTask().execute("http://192.168.1.107/Apolo/WebService/Rest/Enviar_Recibir_Json/prueba_3/recibe.php");
                 break;
             case R.id.add_upload_icon:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -295,7 +299,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
     }
 
-    public static String POST(String url, Reclamo reclamo){
+    /*public static String POST(String url, Reclamo reclamo){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -309,14 +313,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             String json = "";
 
             // 3. build jsonObject
-            JSONObject jsonObject = new JSONObject();
+           /* JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("RP_Category", reclamo.getCategoria());
-            jsonObject.accumulate("fecha", reclamo.getFecha());
+         //   jsonObject.accumulate("fecha", reclamo.getFecha());
             jsonObject.accumulate("latitud", reclamo.getLat());
             jsonObject.accumulate("longitud",reclamo.getLng());
             jsonObject.accumulate("imei",reclamo.getImei());
             jsonObject.accumulate("RP_Group",reclamo.getSubcategoria());
-            jsonObject.accumulate("img",reclamo.getFoto());
+            //jsonObject.accumulate("img",reclamo.getFoto());
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
@@ -327,7 +331,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             // json = mapper.writeValueAsString(person);
 
             // 5. set json to StringEntity
-            StringEntity se = new StringEntity(json);
+            StringEntity se = new StringEntity("datos="+json);
 
             // 6. set httpPost Entity
             httpPost.setEntity(se);
@@ -354,6 +358,38 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
         // 11. return result
         return result;
+    }*/
+
+    public static String POST2(String url, Reclamo reclamo) {
+        try {
+            String responseServer = null;
+
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost(url);
+
+
+            // 3. build jsonObject
+            JSONObject jsonObject = new JSONObject();
+         //   jsonObject.put("RP_Category", reclamo.getCategoria());
+         //   jsonObject.put("latitud", reclamo.getLat());
+         //   jsonObject.put("longitud", reclamo.getLng());
+            jsonObject.put("imei", reclamo.getImei());
+         //   jsonObject.put("RP_Group", reclamo.getSubcategoria());
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("datos", jsonObject.toString()));
+            Log.e("mainToPost", "mainToPost" + nameValuePairs.toString());
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            HttpResponse response = httpclient.execute(httpPost);
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        // 11. return result
+        return "";
     }
 
     private static String convertInputStreamToString(InputStream inputStream) throws IOException{
@@ -404,7 +440,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
-            return POST(urls[0],reclamo);
+            return POST2(urls[0],reclamo);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
