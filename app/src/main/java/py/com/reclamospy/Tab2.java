@@ -86,6 +86,7 @@ public class Tab2 extends Fragment {
         // Perform any camera updates here
         //setSupportActionBar(toolbar);
         if (checkNetwork()) {
+            Toast.makeText(getActivity().getBaseContext(), "Con conexión a internet !!!", Toast.LENGTH_LONG).show();
             new GetContacts().execute();
         }else{
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();

@@ -1,6 +1,8 @@
 package py.com.reclamospy;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -9,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import adapter.ViewPagerAdapter;
 import model.Reclamo;
@@ -45,9 +48,24 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
 
         pocaPresion = (ImageButton)findViewById(R.id.aguapocapresion);
         pocaPresion.setOnClickListener(this);
+
+        if (!checkNetwork()) {
+            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
+
         setSupportActionBar(toolbar);
     }
 
+    public boolean checkNetwork(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

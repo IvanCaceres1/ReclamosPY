@@ -1,5 +1,7 @@
 package py.com.reclamospy;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,16 +48,15 @@ import model.Reclamo;
  * Created by ivan on 9/8/15.
  */
 public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, GoogleMap.OnMyLocationChangeListener{
+    static final double DEFAULT_LATITUDE = -25.516666700000000000;
+    static final double DEFAULT_LONGITUDE= -54.616666699999996000;
     private GoogleMap googleMap;
-    private byte[] bArray;
     private Toolbar toolbar;
     private float markerColor;
     private Reclamo reclamo;
-    //Reverse geocoding addressess result
+    //Reverse geocoding result //
     private List<Address> addresses;
     Geocoder geocoder;
-    static final double DEFAULT_LATITUDE = -25.516666700000000000;
-    static final double DEFAULT_LONGITUDE= -54.616666699999996000;
     //Set marker at currrent position and set location change listener to null
     boolean isFirsChangeListen;
     private FloatingActionButton cameraBtn,sendBtn,uploadBtn;
@@ -92,29 +94,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
         //Obtain address from lat,lng
         geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-              addresses = geocoder.getFromLocation(DEFAULT_LATITUDE,DEFAULT_LONGITUDE,1);
-            if (addresses.size() > 0){
-                String address = addresses.get(0).getAddressLine(0);
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String know = addresses.get(0).getFeatureName();
-                googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(DEFAULT_LATITUDE,DEFAULT_LONGITUDE))
-                        .draggable(true)
-                        .title(know+" , "+address+" , "+city+" , "+
-                                 country)
-                        .icon(BitmapDescriptorFactory
-                        .defaultMarker(markerColor)));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
 
-                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        obtainAddressFromGPS();
+
+        if (!checkNetwork()) {
+            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
-
 
         googleMap.setOnMapClickListener(this);
 
@@ -122,6 +107,17 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
+    }
+
+    public boolean checkNetwork(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isAvailable()
+                && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
@@ -201,30 +197,63 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     }
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (requestCode == 2 && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            bArray = bos.toByteArray();
-            reclamo.setFoto (bArray);
-            Toast.makeText(getBaseContext(), "TAKE: "+reclamo.toString(), Toast.LENGTH_LONG).show();
+            if (data != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                reclamo.setFoto(bos.toByteArray());
+                Toast.makeText(getBaseContext(), "TAKE: " + reclamo.toString(), Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
+            }
         }else if (requestCode == 1 && resultCode == RESULT_OK){
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
 
-            Bitmap mBitmap = BitmapFactory.decodeFile(picturePath);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] imageInByte = stream.toByteArray();
-            reclamo.setFoto(imageInByte);
-            Toast.makeText(getBaseContext(), "UPLOAD: "+reclamo.toString(), Toast.LENGTH_LONG).show();
-            cursor.close();
+                Bitmap mBitmap = BitmapFactory.decodeFile(picturePath);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] imageInByte = stream.toByteArray();
+                reclamo.setFoto(imageInByte);
+                Toast.makeText(getBaseContext(), "UPLOAD: " + reclamo.toString(), Toast.LENGTH_LONG).show();
+                cursor.close();
+            }else{
+                Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void obtainAddressFromGPS(){
+        try {
+            addresses = geocoder.getFromLocation(DEFAULT_LATITUDE,DEFAULT_LONGITUDE,1);
+            if (addresses.size() > 0){
+                String address = addresses.get(0).getAddressLine(0);
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String know = addresses.get(0).getFeatureName();
+                googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(DEFAULT_LATITUDE,DEFAULT_LONGITUDE))
+                        .draggable(true)
+                        .title(know+" , "+address+" , "+city+" , "+
+                                country)
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(markerColor)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
+
+                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
+            }
+        } catch (IOException e) {
+            Toast.makeText(getBaseContext(), "Fallo en obtener dirección !", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
@@ -342,7 +371,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Data Sent!" + result, Toast.LENGTH_LONG).show();
         }
     }
 }

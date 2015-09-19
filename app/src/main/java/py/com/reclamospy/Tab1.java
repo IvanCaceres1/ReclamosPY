@@ -29,7 +29,7 @@ public class Tab1 extends ListFragment {
 
     // URL to get contacts JSO
     private static String url = "http://yoreporto.org/SelectAll_v2.php";
-
+    private ProgressDialog pd = null;
     // JSON Node names
     private static final String TAG_LATLONGS = "reclamo";
 
@@ -42,7 +42,6 @@ public class Tab1 extends ListFragment {
     private static final String TAG_FECHA = "fecha";
     private static final String TAG_DATE = "Created";
     private static final String TAG_FOTO = "Img";
-    private ProgressDialog pDialog;
 
     // contacts JSONArray
     JSONArray latlngs = null;
@@ -66,6 +65,7 @@ public class Tab1 extends ListFragment {
         setRetainInstance(true);
         if (checkNetwork()) {
             new GetContacts().execute();
+            Toast.makeText(getActivity().getBaseContext(), "Con conexión a internet !!!", Toast.LENGTH_LONG).show();
         }else{
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
@@ -87,12 +87,11 @@ public class Tab1 extends ListFragment {
     /**
      * Async task class to get json by making HTTP call
      * */
-    private class GetContacts extends AsyncTask<Void, Void, Void> {
+    public class GetContacts extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
      }
 
         @Override
