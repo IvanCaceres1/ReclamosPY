@@ -91,6 +91,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
+        googleMap.getUiSettings().setMapToolbarEnabled(true);
 
         //Obtain address from lat,lng
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -102,6 +103,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
 
         googleMap.setOnMapClickListener(this);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
 
         if (googleMap!= null) {
             googleMap.setOnMyLocationChangeListener(this);
@@ -144,7 +146,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
     @Override
     public void onMapClick(LatLng latLng) {
-
+        if (!checkNetwork()) {
+            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
         googleMap.clear();
         reclamo.setLat(latLng.latitude + "");
         reclamo.setLng(latLng.longitude + "");
@@ -175,6 +179,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
     @Override
     public void onClick(View v) {
+        if (!checkNetwork()) {
+            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
         switch(v.getId()){
             case R.id.add_camera_icon:
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -196,6 +203,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
     }
     public void onActivityResult(int requestCode,int resultCode,Intent data){
+        if (!checkNetwork()) {
+            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
         if (requestCode == 2 && resultCode == RESULT_OK) {
             if (data != null) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");

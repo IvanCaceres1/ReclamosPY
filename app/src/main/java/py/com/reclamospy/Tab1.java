@@ -65,7 +65,6 @@ public class Tab1 extends ListFragment {
         setRetainInstance(true);
         if (checkNetwork()) {
             new GetContacts().execute();
-            Toast.makeText(getActivity().getBaseContext(), "Con conexión a internet !!!", Toast.LENGTH_LONG).show();
         }else{
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
@@ -182,11 +181,13 @@ public class Tab1 extends ListFragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            ListAdapter adapter = new SimpleAdapter(
-                    getActivity(), latLngList,
-                    R.layout.list_item, new String[] {TAG_ID, TAG_CATEGORIA,TAG_SUBCATEGORIA,TAG_FECHA,TAG_DATE}, new int[] {R.id.id,R.id.categoria,R.id.subcategoria,R.id.elapsedTime,R.id.fecha});
+            if (latLngList != null ) {
+                ListAdapter adapter = new SimpleAdapter(
+                        getActivity(), latLngList,
+                        R.layout.list_item, new String[]{TAG_ID, TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE}, new int[]{R.id.id, R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha});
 
-            setListAdapter(adapter);
+                setListAdapter(adapter);
+            }
         }
 
     }

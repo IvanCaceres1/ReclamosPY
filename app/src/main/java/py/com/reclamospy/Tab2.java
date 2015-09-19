@@ -81,13 +81,13 @@ public class Tab2 extends Fragment {
 
         googleMap = mMapView.getMap();
         googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
         // latitude and longitude
 
         // Perform any camera updates here
         //setSupportActionBar(toolbar);
         if (checkNetwork()) {
-            Toast.makeText(getActivity().getBaseContext(), "Con conexión a internet !!!", Toast.LENGTH_LONG).show();
-            new GetContacts().execute();
+                new GetContacts().execute();
         }else{
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
@@ -187,27 +187,29 @@ public class Tab2 extends Fragment {
             double longDefault = -54.616666699999996000;
 
             // create marker
-            for (Reclamo reclamo: latLngList){
-                double latitude = Double.parseDouble(reclamo.getLat());
-                double longitude = Double.parseDouble(reclamo.getLng());
-                if (reclamo.getCategoria().equals("AGUA")){
-                    MarkerOptions marker = new MarkerOptions().position(
-                            new LatLng(latitude, longitude)).title("Agua");
-                    marker.icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                    googleMap.addMarker(marker);
-                }else if (reclamo.getCategoria().equals("ENERGIA")){
-                    MarkerOptions marker = new MarkerOptions().position(
-                            new LatLng(latitude, longitude)).title("Energia");
-                    marker.icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    googleMap.addMarker(marker);
-                }else if (reclamo.getCategoria().equals("VIA PUBLICA")){
-                    MarkerOptions marker = new MarkerOptions().position(
-                            new LatLng(latitude, longitude)).title("Via publica");
-                    marker.icon(BitmapDescriptorFactory
-                            .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                    googleMap.addMarker(marker);
+            if (latLngList != null) {
+                for (Reclamo reclamo : latLngList) {
+                    double latitude = Double.parseDouble(reclamo.getLat());
+                    double longitude = Double.parseDouble(reclamo.getLng());
+                    if (reclamo.getCategoria().equals("AGUA")) {
+                        MarkerOptions marker = new MarkerOptions().position(
+                                new LatLng(latitude, longitude)).title("Agua");
+                        marker.icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        googleMap.addMarker(marker);
+                    } else if (reclamo.getCategoria().equals("ENERGIA")) {
+                        MarkerOptions marker = new MarkerOptions().position(
+                                new LatLng(latitude, longitude)).title("Energia");
+                        marker.icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        googleMap.addMarker(marker);
+                    } else if (reclamo.getCategoria().equals("VIA PUBLICA")) {
+                        MarkerOptions marker = new MarkerOptions().position(
+                                new LatLng(latitude, longitude)).title("Via publica");
+                        marker.icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        googleMap.addMarker(marker);
+                    }
                 }
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
