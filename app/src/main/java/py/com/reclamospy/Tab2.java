@@ -1,5 +1,6 @@
 package py.com.reclamospy;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -56,6 +57,7 @@ public class Tab2 extends Fragment {
     MapView mMapView;
     private GoogleMap googleMap;
     Toolbar toolbar;
+    private ProgressDialog pd = null;
 
 
     @Override
@@ -82,13 +84,12 @@ public class Tab2 extends Fragment {
         googleMap = mMapView.getMap();
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+
         // latitude and longitude
 
         // Perform any camera updates here
         //setSupportActionBar(toolbar);
-        if (checkNetwork()) {
-                new GetContacts().execute();
-        }else{
+        if (!checkNetwork()) {
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
         return v;
@@ -104,6 +105,22 @@ public class Tab2 extends Fragment {
             return true;
         }else{
             return false;
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden){
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            new GetContacts().execute();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isResumed() && latLngList.size() == 0) {
+            new GetContacts().execute();
         }
     }
 
@@ -140,7 +157,7 @@ public class Tab2 extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
+            pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
         }
 
         @Override
@@ -216,6 +233,7 @@ public class Tab2 extends Fragment {
                     .target(new LatLng(latDefault, longDefault)).zoom(15).build();
             googleMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
+            pd.dismiss();
         }
 
     }

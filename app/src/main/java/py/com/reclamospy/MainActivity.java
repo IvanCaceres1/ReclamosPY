@@ -71,6 +71,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 if (!checkNetwork()) {
                     Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
                 }
+                adapter.getItem(position).setUserVisibleHint(true);
+
             }
 
             @Override
@@ -81,6 +83,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+        pager.setOffscreenPageLimit(3);
+
     }
 
 

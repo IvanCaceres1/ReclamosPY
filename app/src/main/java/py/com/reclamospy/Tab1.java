@@ -63,10 +63,31 @@ public class Tab1 extends ListFragment {
         latLngList = new ArrayList<HashMap<String, String>>();
 
         setRetainInstance(true);
-        if (checkNetwork()) {
-            new GetContacts().execute();
-        }else{
+        if (!checkNetwork()) {
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden){
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            new GetContacts().execute();
+        }
+    }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        boolean isVisible = isVisible();
+        boolean isMenuVisible = isMenuVisible();
+
+        if (isVisibleToUser && isResumed() && latLngList.size() == 0 ) {
+            new GetContacts().execute();
         }
     }
 
@@ -91,6 +112,7 @@ public class Tab1 extends ListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
      }
 
         @Override
@@ -188,6 +210,7 @@ public class Tab1 extends ListFragment {
 
                 setListAdapter(adapter);
             }
+            pd.dismiss();
         }
 
     }
