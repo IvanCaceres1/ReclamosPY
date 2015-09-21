@@ -222,15 +222,15 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 startActivityForResult(takePictureIntent,2);
                 break;
             case R.id.add_send_icon:
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("reclamo",reclamo);
-                System.out.println("");
                 new HttpAsyncTask().execute("http://civpy.com/reporteS.php");
                 break;
             case R.id.add_upload_icon:
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent,1);
+               // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+               // intent.setType("image/*");
+               // startActivityForResult(intent,1);
+                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(galleryIntent, 1);
         }
 
     }
@@ -250,7 +250,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             }
         }else if (requestCode == 1 && resultCode == RESULT_OK){
             if (data != null) {
-                Uri selectedImage = data.getData();
+                /*Uri selectedImage = data.getData();
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
                 Cursor cursor = getContentResolver().query(selectedImage,
@@ -266,7 +266,24 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
                 Toast.makeText(getBaseContext(), "UPLOAD: " + reclamo.toString(), Toast.LENGTH_LONG).show();
-                cursor.close();
+                cursor.close();*/
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgDecodableString = cursor.getString(columnIndex);
+                Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] imageInByte = stream.toByteArray();
+                reclamo.setFoto(imageInByte);
+
             }else{
                 Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
             }
@@ -395,6 +412,10 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Reporte enviado!" + result, Toast.LENGTH_LONG).show();
             pd.dismiss();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 }

@@ -281,22 +281,22 @@ public class Tab2 extends Fragment {
                     MarkerOptions icon = null;
                     if (reclamo.getCategoria().equals("AGUA")) {
                         marker = new MarkerOptions().position(
-                                new LatLng(latitude, longitude)).title("AGUA")
-                        .snippet(reclamo.getSubcategoria() +" - " + calculateElapsedTime(reclamo.getFecha()));
+                                new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                        .snippet(calculateElapsedTime(reclamo.getFecha()));
                         marker.icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                         googleMap.addMarker(marker);
                     } else if (reclamo.getCategoria().equals("ENERGIA")) {
                         marker = new MarkerOptions().position(
-                                new LatLng(latitude, longitude)).title("ENERGIA - "+ calculateElapsedTime(reclamo.getFecha()))
-                        .snippet(reclamo.getSubcategoria());
+                                new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                                .snippet(calculateElapsedTime(reclamo.getFecha()));
                         marker.icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                         googleMap.addMarker(marker);
                     } else if (reclamo.getCategoria().equals("VIA PUBLICA")) {
                         marker = new MarkerOptions().position(
-                                new LatLng(latitude, longitude)).title("VIA PUBLICA - "+calculateElapsedTime(reclamo.getFecha()))
-                                .snippet(reclamo.getSubcategoria());
+                                new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                                .snippet(calculateElapsedTime(reclamo.getFecha()));
 
                         marker.icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
