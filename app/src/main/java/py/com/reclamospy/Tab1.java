@@ -28,7 +28,7 @@ import java.util.HashMap;
 public class Tab1 extends ListFragment {
 
     // URL to get contacts JSO
-    private static String url = "http://yoreporto.org/SelectAll_v2.php";
+    private static String url = "http://civpy.com/SelectAll_v2.php";
     private ProgressDialog pd = null;
     // JSON Node names
     private static final String TAG_LATLONGS = "reclamo";
@@ -37,11 +37,10 @@ public class Tab1 extends ListFragment {
     private static final String TAG_IMEI = "IMEI";
     private static final String TAG_LAT = "latitud";
     private static final String TAG_LONG = "longitud";
-    private static final String TAG_CATEGORIA= "RP_Category";
-    private static final String TAG_SUBCATEGORIA = "RP_Group";
+    private static final String TAG_CATEGORIA= "RP_Group";
+    private static final String TAG_SUBCATEGORIA = "RP_Category";
     private static final String TAG_FECHA = "fecha";
     private static final String TAG_DATE = "Created";
-    private static final String TAG_FOTO = "Img";
 
     // contacts JSONArray
     JSONArray latlngs = null;

@@ -1,5 +1,6 @@
 package py.com.reclamospy;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -26,6 +27,7 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
     ImageButton sinServicio;
     ImageButton aguaSucia;
     ImageButton pocaPresion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,10 +103,20 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
                 startActivity(intent);
                 break;
             case R.id.aguasinservicio:
-                System.out.println("AGUA SIN SERVICIO PRESSED");
+                reclamo.setSubcategoria("SIN SERVICIO");
+                Intent intent2 = new Intent(this, MapView.class);
+                Bundle bundle2 = new Bundle();
+                bundle2.putSerializable("reclamo", reclamo);
+                intent2.putExtras(bundle2);
+                startActivity(intent2);
                 break;
             case R.id.aguapocapresion:
-                System.out.println("AGUA POCA PRESION PRESSED");
+                reclamo.setSubcategoria("POCA PRESION");
+                Intent intent3 = new Intent(this, MapView.class);
+                Bundle bundle3 = new Bundle();
+                bundle3.putSerializable("reclamo",reclamo);
+                intent3.putExtras(bundle3);
+                startActivity(intent3);
                 break;
         }
 

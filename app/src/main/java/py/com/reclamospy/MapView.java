@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -69,9 +70,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     //Set marker at currrent position and set location change listener to null
     boolean isFirsChangeListen;
     private FloatingActionButton cameraBtn,sendBtn,uploadBtn;
+    ProgressDialog pd,pdLoadMap;
+
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
+
         setContentView(R.layout.map_view);
         isFirsChangeListen = true;
 
@@ -99,28 +103,25 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMyLocationEnabled(true);
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
-        googleMap.getUiSettings().setMapToolbarEnabled(true);
 
         //Obtain address from lat,lng
         geocoder = new Geocoder(this, Locale.getDefault());
-
-        obtainAddressFromGPS();
-
-        checkForLocationService();
-
-        if (!checkNetwork()) {
+        if (checkNetwork()) {
+            obtainAddressFromGPS();
+            checkForLocationService();
+        }else{
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
-
         googleMap.setOnMapClickListener(this);
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (googleMap!= null) {
             googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
+
     }
+
 
     public void checkForLocationService(){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -193,13 +194,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 String country = addresses.get(0).getCountryName();
                 String know = addresses.get(0).getFeatureName();
                 Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
-                googleMap.addMarker(new MarkerOptions()
+                Marker marker = googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latLng.latitude,latLng.longitude))
                         .draggable(true)
-                        .title(know+" , "+address+" , "+city+" , "+
-                                country)
+                        .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                        .snippet(address+", "+city)
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(markerColor)));
+                marker.showInfoWindow();
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 13));
             }
         } catch (IOException e) {
@@ -222,10 +224,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             case R.id.add_send_icon:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("reclamo",reclamo);
-               // Intent intent2 = new Intent(this, ImageButtonActivity.class);
-               /// intent2.putExtras(bundle);
-               // startActivity(intent2);
-                new HttpAsyncTask().execute("http://192.168.1.107/Apolo/WebService/Rest/Enviar_Recibir_Json/prueba_3/recibe.php");
+                System.out.println("");
+                new HttpAsyncTask().execute("http://civpy.com/reporteS.php");
                 break;
             case R.id.add_upload_icon:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -282,13 +282,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 String state = addresses.get(0).getAdminArea();
                 String country = addresses.get(0).getCountryName();
                 String know = addresses.get(0).getFeatureName();
-                googleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(DEFAULT_LATITUDE,DEFAULT_LONGITUDE))
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE))
                         .draggable(true)
-                        .title(know+" , "+address+" , "+city+" , "+
-                                country)
+                        .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                        .snippet(address+", "+city)
                         .icon(BitmapDescriptorFactory
                                 .defaultMarker(markerColor)));
+                marker.showInfoWindow();
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
 
                 Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
@@ -299,68 +300,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
     }
 
-    /*public static String POST(String url, Reclamo reclamo){
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // 1. create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
-
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost(url);
-
-            String json = "";
-
-            // 3. build jsonObject
-           /* JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("RP_Category", reclamo.getCategoria());
-         //   jsonObject.accumulate("fecha", reclamo.getFecha());
-            jsonObject.accumulate("latitud", reclamo.getLat());
-            jsonObject.accumulate("longitud",reclamo.getLng());
-            jsonObject.accumulate("imei",reclamo.getImei());
-            jsonObject.accumulate("RP_Group",reclamo.getSubcategoria());
-            //jsonObject.accumulate("img",reclamo.getFoto());
-
-            // 4. convert JSONObject to JSON to String
-            json = jsonObject.toString();
-            System.out.println("Json Object POST :"+json);
-
-            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-            // ObjectMapper mapper = new ObjectMapper();
-            // json = mapper.writeValueAsString(person);
-
-            // 5. set json to StringEntity
-            StringEntity se = new StringEntity("datos="+json);
-
-            // 6. set httpPost Entity
-            httpPost.setEntity(se);
-
-            // 7. Set some headers to inform server about the type of the content
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-
-            // 9. receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            // 10. convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
-
-        } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
-        }
-
-        // 11. return result
-        return result;
-    }*/
-
-    public static String POST2(String url, Reclamo reclamo) {
+    public static String POST(String url, Reclamo reclamo) {
         try {
             String responseServer = null;
 
@@ -373,11 +313,12 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-         //   jsonObject.put("RP_Category", reclamo.getCategoria());
-         //   jsonObject.put("latitud", reclamo.getLat());
-         //   jsonObject.put("longitud", reclamo.getLng());
+            jsonObject.put("foto",reclamo.getFoto());
+            jsonObject.put("RP_Group", reclamo.getCategoria());
+            jsonObject.put("RP_Category", reclamo.getSubcategoria());
+            jsonObject.put("latitud", reclamo.getLat());
+            jsonObject.put("longitud", reclamo.getLng());
             jsonObject.put("imei", reclamo.getImei());
-         //   jsonObject.put("RP_Group", reclamo.getSubcategoria());
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair("datos", jsonObject.toString()));
             Log.e("mainToPost", "mainToPost" + nameValuePairs.toString());
@@ -419,13 +360,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                     String country = addresses.get(0).getCountryName();
                     String know = addresses.get(0).getFeatureName();
                     Toast.makeText(getBaseContext(), know + " , " + address + " , " + city + " , " + state + " , " + country, Toast.LENGTH_LONG).show();
-                    googleMap.addMarker(new MarkerOptions()
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(location.getLatitude(), location.getLongitude()))
                             .draggable(true)
-                            .title(know + " , " + address + " , " + city + " , " +
-                                    country)
+                            .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                            .snippet(address+", "+city)
                             .icon(BitmapDescriptorFactory
                                     .defaultMarker(markerColor)));
+                    marker.showInfoWindow();
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
                 }
             } catch (IOException e) {
@@ -439,13 +381,20 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            pd = ProgressDialog.show(MapView.this, "Por favor espere !","Enviando reporte...", true);
+
+        }
+        @Override
         protected String doInBackground(String... urls) {
-            return POST2(urls[0],reclamo);
+            return POST(urls[0],reclamo);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Data Sent!" + result, Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Reporte enviado!" + result, Toast.LENGTH_LONG).show();
+            pd.dismiss();
         }
     }
 }

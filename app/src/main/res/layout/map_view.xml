@@ -28,7 +28,7 @@
             android:layout_height="55dp"
             android:src="@mipmap/ic_send"
             android:id="@+id/add_send_icon"
-            android:layout_marginTop="360dp"
+            android:layout_marginTop="430dp"
             android:layout_marginLeft="280dp"
             android:layout_marginStart="280dp"
 
