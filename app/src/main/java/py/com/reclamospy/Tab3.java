@@ -1,6 +1,7 @@
 package py.com.reclamospy;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +34,6 @@ public class Tab3 extends Fragment implements View.OnClickListener{
                 false);
 
         toolbar = (Toolbar) v.findViewById(R.id.tool_bar);
-
         reclamo = new Reclamo();
         reclamo.setFecha(new Date());
         //GET IMEI

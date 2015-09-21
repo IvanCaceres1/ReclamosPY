@@ -2,6 +2,7 @@ package py.com.reclamospy;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -128,6 +129,12 @@ public class Tab1 extends ListFragment {
             super.onPreExecute();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
             pd.setCancelable(true);
+            pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    Toast.makeText(getActivity().getBaseContext(), "Operacion cancelada !!!", Toast.LENGTH_LONG).show();
+                }
+            });
      }
 
         @Override

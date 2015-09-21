@@ -220,6 +220,12 @@ public class Tab2 extends Fragment {
             super.onPreExecute();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
             pd.setCancelable(true);
+            pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    Toast.makeText(getActivity().getBaseContext(), "Operacion cancelada !!!", Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         @Override

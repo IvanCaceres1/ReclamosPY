@@ -173,7 +173,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // as\ you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -200,7 +200,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 String state = addresses.get(0).getAdminArea();
                 String country = addresses.get(0).getCountryName();
                 String know = addresses.get(0).getFeatureName();
-                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
                 Marker marker = googleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latLng.latitude,latLng.longitude))
                         .draggable(true)
@@ -251,7 +250,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 reclamo.setFoto(bos.toByteArray());
-                Toast.makeText(getBaseContext(), "TAKE: " + reclamo.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
             }
@@ -273,7 +272,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
-
+                Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
             }
@@ -298,8 +297,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                                 .defaultMarker(markerColor)));
                 marker.showInfoWindow();
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
-
-                Toast.makeText(getBaseContext(), know+" , "+address+" , "+city+" , "+state+" , "+country,Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
             Toast.makeText(getBaseContext(), "Fallo en obtener dirección !", Toast.LENGTH_LONG).show();
@@ -366,7 +363,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                     String state = addresses.get(0).getAdminArea();
                     String country = addresses.get(0).getCountryName();
                     String know = addresses.get(0).getFeatureName();
-                    Toast.makeText(getBaseContext(), know + " , " + address + " , " + city + " , " + state + " , " + country, Toast.LENGTH_LONG).show();
                     Marker marker = googleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(location.getLatitude(), location.getLongitude()))
                             .draggable(true)
