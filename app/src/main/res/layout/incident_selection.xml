@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="1dp"
+        android:layout_gravity="center_horizontal">
+        <ImageButton
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:background="@null"
+            android:src="@mipmap/viapublicaviaenmalestado"
+            android:id="@+id/viapublicamalestado"
+            android:scaleType="fitXY"/>
+        <ImageButton
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:background="@null"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/viapublicabasuras"
+            android:id="@+id/viapublicabasura"
+            android:scaleType="fitXY"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="1dp">
+        <ImageButton
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:id="@+id/viapublicamalestacionado"
+            android:background="@null"
+            android:src="@mipmap/viapublicamalestacionado"
+            android:scaleType="fitXY"
+            />
+        <ImageButton
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:id="@+id/viapublicatransitocerrado"
+            android:background="@null"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/viapublicatransitocerrado"
+            android:scaleType="fitXY"/>
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/ColorPrimary"
+        android:text="*Seleccione el tipo de reclamo."/>
 </LinearLayout>

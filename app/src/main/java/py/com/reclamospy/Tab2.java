@@ -151,7 +151,7 @@ public class Tab2 extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && isResumed() && latLngList.size() == 0) {
+        if (isVisibleToUser && isResumed()) {
             new GetContacts().execute();
         }
     }
@@ -219,6 +219,7 @@ public class Tab2 extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
+            pd.setCancelable(true);
         }
 
         @Override
@@ -305,7 +306,7 @@ public class Tab2 extends Fragment {
                 }
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(latDefault, longDefault)).zoom(15).build();
+                    .target(new LatLng(latDefault, longDefault)).zoom(12).build();
             googleMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
             pd.dismiss();

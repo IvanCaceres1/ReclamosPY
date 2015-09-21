@@ -1,33 +1,15 @@
 package py.com.reclamospy;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Date;
 
 import model.Reclamo;
@@ -51,6 +33,7 @@ public class Tab3 extends Fragment implements View.OnClickListener{
                 false);
 
         toolbar = (Toolbar) v.findViewById(R.id.tool_bar);
+
         reclamo = new Reclamo();
         reclamo.setFecha(new Date());
         //GET IMEI
@@ -92,10 +75,20 @@ public class Tab3 extends Fragment implements View.OnClickListener{
                 startActivity(intent);
                 break;
             case R.id.energiaButton:
-                System.out.println("ENERGIA PRESSED");
+                reclamo.setCategoria("ENERGIA");
+                Bundle bundle2 = new Bundle();
+                bundle2.putSerializable("reclamo",reclamo);
+                Intent intent2 = new Intent(getActivity(), ReportSubTypeSelection.class);
+                intent2.putExtras(bundle2);
+                startActivity(intent2);
                 break;
             case R.id.viapublicaButton:
-                System.out.println("VIA PUBLICA PRESSED");
+                reclamo.setCategoria("VIA PUBLICA");
+                Bundle bundle3 = new Bundle();
+                bundle3.putSerializable("reclamo",reclamo);
+                Intent intent3 = new Intent(getActivity(), ReportSubTypeSelection.class);
+                intent3.putExtras(bundle3);
+                startActivity(intent3);
                 break;
         }
 

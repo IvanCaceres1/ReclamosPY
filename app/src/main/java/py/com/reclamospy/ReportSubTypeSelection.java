@@ -24,9 +24,12 @@ import util.SlidingTabLayout;
 public class ReportSubTypeSelection extends ActionBarActivity implements View.OnClickListener {
     Toolbar toolbar;
     Reclamo reclamo;
-    ImageButton sinServicio;
-    ImageButton aguaSucia;
-    ImageButton pocaPresion;
+    //water image button
+    ImageButton sinServicio,aguaSucia,pocaPresion;
+    //energy imageButton
+    ImageButton sinServicioEnergy,bajaTensionEnergy,averiaEnergy;
+    //via publica imageButton
+    ImageButton transitoCerradoBtn,basurasBtn,malEstadoBtn,malEstacionadoBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,27 +38,55 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
         if  (reclamo.getCategoria().equals("AGUA")) {
             setContentView(R.layout.water_selection);
+            sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
+            sinServicio.setOnClickListener(this);
+
+            aguaSucia = (ImageButton)findViewById(R.id.aguasucia);
+            aguaSucia.setOnClickListener(this);
+
+            pocaPresion = (ImageButton)findViewById(R.id.aguapocapresion);
+            pocaPresion.setOnClickListener(this);
+
         }else if (reclamo.getCategoria().equals("ENERGIA")){
             setContentView(R.layout.energy_selection);
+            sinServicioEnergy = (ImageButton)findViewById(R.id.energiasinservicio);
+            sinServicioEnergy.setOnClickListener(this);
+
+            bajaTensionEnergy = (ImageButton)findViewById(R.id.energiabajatension);
+            bajaTensionEnergy.setOnClickListener(this);
+
+            averiaEnergy = (ImageButton)findViewById(R.id.energiaaveria);
+            averiaEnergy.setOnClickListener(this);
         }else if (reclamo.getCategoria().equals("VIA PUBLICA")){
             setContentView(R.layout.incident_selection);
+            transitoCerradoBtn = (ImageButton)findViewById(R.id.viapublicatransitocerrado);
+            transitoCerradoBtn.setOnClickListener(this);
+
+            basurasBtn = (ImageButton)findViewById(R.id.viapublicabasura);
+            basurasBtn.setOnClickListener(this);
+
+            malEstadoBtn= (ImageButton)findViewById(R.id.viapublicamalestado);
+            malEstadoBtn.setOnClickListener(this);
+
+            malEstacionadoBtn= (ImageButton)findViewById(R.id.viapublicamalestacionado);
+            malEstacionadoBtn.setOnClickListener(this);
         }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
 
-        sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
-        sinServicio.setOnClickListener(this);
-
-        aguaSucia = (ImageButton)findViewById(R.id.aguasucia);
-        aguaSucia.setOnClickListener(this);
-
-        pocaPresion = (ImageButton)findViewById(R.id.aguapocapresion);
-        pocaPresion.setOnClickListener(this);
 
         if (!checkNetwork()) {
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
 
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     public boolean checkNetwork(){
@@ -117,6 +148,62 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
                 bundle3.putSerializable("reclamo",reclamo);
                 intent3.putExtras(bundle3);
                 startActivity(intent3);
+                break;
+            case R.id.energiaaveria:
+                reclamo.setSubcategoria("AVERIA");
+                Intent intent4 = new Intent(this, MapView.class);
+                Bundle bundle4 = new Bundle();
+                bundle4.putSerializable("reclamo",reclamo);
+                intent4.putExtras(bundle4);
+                startActivity(intent4);
+                break;
+            case R.id.energiabajatension:
+                reclamo.setSubcategoria("BAJA TENSION");
+                Intent intent5 = new Intent(this, MapView.class);
+                Bundle bundle5 = new Bundle();
+                bundle5.putSerializable("reclamo", reclamo);
+                intent5.putExtras(bundle5);
+                startActivity(intent5);
+                break;
+            case R.id.energiasinservicio:
+                reclamo.setSubcategoria("SIN SERVICIO");
+                Intent intent6 = new Intent(this, MapView.class);
+                Bundle bundle6 = new Bundle();
+                bundle6.putSerializable("reclamo",reclamo);
+                intent6.putExtras(bundle6);
+                startActivity(intent6);
+                break;
+            case R.id.viapublicabasura:
+                reclamo.setSubcategoria("BASURAS Y DESPERDICIOS");
+                Intent intent7 = new Intent(this, MapView.class);
+                Bundle bundle7 = new Bundle();
+                bundle7.putSerializable("reclamo",reclamo);
+                intent7.putExtras(bundle7);
+                startActivity(intent7);
+                break;
+            case R.id.viapublicamalestacionado:
+                reclamo.setSubcategoria("MAL ESTACIONADO");
+                Intent intent8 = new Intent(this, MapView.class);
+                Bundle bundle8 = new Bundle();
+                bundle8.putSerializable("reclamo", reclamo);
+                intent8.putExtras(bundle8);
+                startActivity(intent8);
+                break;
+            case R.id.viapublicamalestado:
+                reclamo.setSubcategoria("VIA EN MAL ESTADO");
+                Intent intent9 = new Intent(this, MapView.class);
+                Bundle bundle9 = new Bundle();
+                bundle9.putSerializable("reclamo",reclamo);
+                intent9.putExtras(bundle9);
+                startActivity(intent9);
+                break;
+            case R.id.viapublicatransitocerrado:
+                reclamo.setSubcategoria("TRANSITO CERRADO");
+                Intent intent10 = new Intent(this, MapView.class);
+                Bundle bundle10 = new Bundle();
+                bundle10.putSerializable("reclamo",reclamo);
+                intent10.putExtras(bundle10);
+                startActivity(intent10);
                 break;
         }
 

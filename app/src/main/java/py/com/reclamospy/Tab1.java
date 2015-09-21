@@ -2,6 +2,8 @@ package py.com.reclamospy;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -12,16 +14,26 @@ import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Created by Edwin on 15/02/2015.
  */
@@ -41,10 +53,13 @@ public class Tab1 extends ListFragment {
     private static final String TAG_SUBCATEGORIA = "RP_Category";
     private static final String TAG_FECHA = "fecha";
     private static final String TAG_DATE = "Created";
+    private static final String TAG_ADDRESS= "address";
 
     // contacts JSONArray
     JSONArray latlngs = null;
-
+    //Reverse geocoding result //
+    private List<Address> addresses;
+    Geocoder geocoder;
     // Hashmap for ListView
     ArrayList<HashMap<String, String>> latLngList;
 
@@ -85,7 +100,7 @@ public class Tab1 extends ListFragment {
         boolean isVisible = isVisible();
         boolean isMenuVisible = isMenuVisible();
 
-        if (isVisibleToUser && isResumed() && latLngList.size() == 0 ) {
+        if (isVisibleToUser && isResumed()) {
             new GetContacts().execute();
         }
     }
@@ -112,6 +127,7 @@ public class Tab1 extends ListFragment {
         protected void onPreExecute() {
             super.onPreExecute();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
+            pd.setCancelable(true);
      }
 
         @Override
@@ -127,6 +143,7 @@ public class Tab1 extends ListFragment {
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
+                    String addressFromGeocoder = null;
 
                     // Getting JSON Array node
 
@@ -141,8 +158,19 @@ public class Tab1 extends ListFragment {
                         String categoria = c.getString(TAG_CATEGORIA);
                         String subcategoria = c.getString(TAG_SUBCATEGORIA);
                         String fecha = c.getString(TAG_FECHA);
-                        String lat= c.getString(TAG_LAT);
-                        String lng = c.getString(TAG_LONG);
+                        double lat= c.getDouble(TAG_LAT);
+                        double lng = c.getDouble(TAG_LONG);
+
+                        geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                        if (checkNetwork()) {
+                            try {
+                                addressFromGeocoder = obtainAddressFromGPS(lat,lng);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
+                        }
 
                         // tmp hashmap for single contact
                         HashMap<String, String> reclamo = new HashMap<String, String>();
@@ -157,8 +185,7 @@ public class Tab1 extends ListFragment {
                         reclamo.put(TAG_FECHA,calculateElapsedTime(d));
                         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
                         reclamo.put(TAG_DATE,formatter.format(d));
-                        reclamo.put(TAG_LAT, lat);
-                        reclamo.put(TAG_LONG, lng);
+                        reclamo.put(TAG_ADDRESS,addressFromGeocoder);
 
                         // adding contact to contact list
                         latLngList.add(reclamo);
@@ -173,6 +200,17 @@ public class Tab1 extends ListFragment {
             }
 
             return null;
+        }
+
+        public String obtainAddressFromGPS(double latitud, double longitud) throws IOException {
+                addresses = geocoder.getFromLocation(latitud,longitud,1);
+                String address = null;
+                String city = null;
+            if (addresses.size() > 0) {
+                    address = addresses.get(0).getAddressLine(0);
+                    city = addresses.get(0).getLocality();
+                }
+            return  address +", "+ city;
         }
 
         public String calculateElapsedTime(Date item){
@@ -205,7 +243,7 @@ public class Tab1 extends ListFragment {
             if (latLngList != null ) {
                 ListAdapter adapter = new SimpleAdapter(
                         getActivity(), latLngList,
-                        R.layout.list_item, new String[]{TAG_ID, TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE}, new int[]{R.id.id, R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha});
+                        R.layout.list_item, new String[]{TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE,TAG_ADDRESS}, new int[]{R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha,R.id.address});
 
                 setListAdapter(adapter);
             }

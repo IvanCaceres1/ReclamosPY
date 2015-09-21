@@ -119,7 +119,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.ic_arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
 
@@ -250,23 +257,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             }
         }else if (requestCode == 1 && resultCode == RESULT_OK){
             if (data != null) {
-                /*Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-
-                Bitmap mBitmap = BitmapFactory.decodeFile(picturePath);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] imageInByte = stream.toByteArray();
-                reclamo.setFoto(imageInByte);
-                Toast.makeText(getBaseContext(), "UPLOAD: " + reclamo.toString(), Toast.LENGTH_LONG).show();
-                cursor.close();*/
                 Uri selectedImage = data.getData();
                 String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
@@ -412,10 +402,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Reporte enviado!" + result, Toast.LENGTH_LONG).show();
             pd.dismiss();
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 }
