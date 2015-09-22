@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">Reclamos PY</string>
+    <string name="app_name">Reportes PY</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="action_Satellite">Satellite</string>
+    <string name="action_normal">Normal</string>
+    <string name="action_terrain">Terreno</string>
+    <string name="action_hybrid">Hibrido </string>
 </resources>

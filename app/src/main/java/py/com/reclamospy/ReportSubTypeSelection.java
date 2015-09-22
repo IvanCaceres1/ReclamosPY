@@ -36,7 +36,7 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
         super.onCreate(savedInstanceState);
         // Creating The Toolbar and setting it as the Toolbar for the activity
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
-        if  (reclamo.getCategoria().equals("AGUA")) {
+        if  (reclamo.getCategoria().equals("Agua")) {
             setContentView(R.layout.water_selection);
             sinServicio = (ImageButton)findViewById(R.id.aguasinservicio);
             sinServicio.setOnClickListener(this);
@@ -47,7 +47,7 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
             pocaPresion = (ImageButton)findViewById(R.id.aguapocapresion);
             pocaPresion.setOnClickListener(this);
 
-        }else if (reclamo.getCategoria().equals("ENERGIA")){
+        }else if (reclamo.getCategoria().equals("Energia")){
             setContentView(R.layout.energy_selection);
             sinServicioEnergy = (ImageButton)findViewById(R.id.energiasinservicio);
             sinServicioEnergy.setOnClickListener(this);
@@ -57,7 +57,7 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
 
             averiaEnergy = (ImageButton)findViewById(R.id.energiaaveria);
             averiaEnergy.setOnClickListener(this);
-        }else if (reclamo.getCategoria().equals("VIA PUBLICA")){
+        }else if (reclamo.getCategoria().equals("Via publica")){
             setContentView(R.layout.incident_selection);
             transitoCerradoBtn = (ImageButton)findViewById(R.id.viapublicatransitocerrado);
             transitoCerradoBtn.setOnClickListener(this);
@@ -79,6 +79,7 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
         }
 
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(reclamo.getCategoria());
         toolbar.setNavigationIcon(R.mipmap.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
@@ -99,29 +100,6 @@ public class ReportSubTypeSelection extends ActionBarActivity implements View.On
             return false;
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     public void onClick(View v) {
         switch(v.getId()){

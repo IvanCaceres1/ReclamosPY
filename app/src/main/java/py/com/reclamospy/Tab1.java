@@ -127,6 +127,7 @@ public class Tab1 extends ListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            latLngList.clear();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
             pd.setCancelable(true);
             pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -153,7 +154,6 @@ public class Tab1 extends ListFragment {
                     String addressFromGeocoder = null;
 
                     // Getting JSON Array node
-
                     latlngs= jsonObj.getJSONArray(TAG_LATLONGS);
 
                     // looping through All Contacts
@@ -183,15 +183,12 @@ public class Tab1 extends ListFragment {
                         HashMap<String, String> reclamo = new HashMap<String, String>();
 
                         // adding each child node to HashMap key => value
-                        reclamo.put(TAG_ID, ""+id+" - ");
                         reclamo.put(TAG_IMEI,imei);
                         reclamo.put(TAG_CATEGORIA,categoria);
                         reclamo.put(TAG_SUBCATEGORIA,subcategoria);
-                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date d = newDateFormat.parse(fecha);
                         reclamo.put(TAG_FECHA,calculateElapsedTime(d));
-                        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                        reclamo.put(TAG_DATE,formatter.format(d));
                         reclamo.put(TAG_ADDRESS,addressFromGeocoder);
 
                         // adding contact to contact list

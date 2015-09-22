@@ -24,8 +24,8 @@
             android:src="@mipmap/ic_send"
             android:id="@+id/add_send_icon"
             android:layout_marginTop="430dp"
-            android:layout_marginLeft="280dp"
-            android:layout_marginStart="280dp"
+            android:layout_marginLeft="285dp"
+            android:layout_marginStart="288dp"
 
             />
 
@@ -35,8 +35,8 @@
             android:layout_marginTop="370dp"
             android:src="@mipmap/ic_upload"
             android:id="@+id/add_upload_icon"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="200dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginStart="7dp"
             />
 
         <android.support.design.widget.FloatingActionButton
@@ -45,8 +45,8 @@
             android:layout_marginTop="430dp"
             android:src="@mipmap/ic_camera"
             android:id="@+id/add_camera_icon"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="200dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             />
 
         </fragment>

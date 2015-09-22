@@ -49,25 +49,10 @@ public class Tab3 extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.aguaButton:
-                reclamo.setCategoria("AGUA");
+                reclamo.setCategoria("Agua");
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("reclamo",reclamo);
                 Intent intent = new Intent(getActivity(), ReportSubTypeSelection.class);
@@ -75,7 +60,7 @@ public class Tab3 extends Fragment implements View.OnClickListener{
                 startActivity(intent);
                 break;
             case R.id.energiaButton:
-                reclamo.setCategoria("ENERGIA");
+                reclamo.setCategoria("Energia");
                 Bundle bundle2 = new Bundle();
                 bundle2.putSerializable("reclamo",reclamo);
                 Intent intent2 = new Intent(getActivity(), ReportSubTypeSelection.class);
@@ -83,7 +68,7 @@ public class Tab3 extends Fragment implements View.OnClickListener{
                 startActivity(intent2);
                 break;
             case R.id.viapublicaButton:
-                reclamo.setCategoria("VIA PUBLICA");
+                reclamo.setCategoria("Via publica");
                 Bundle bundle3 = new Bundle();
                 bundle3.putSerializable("reclamo",reclamo);
                 Intent intent3 = new Intent(getActivity(), ReportSubTypeSelection.class);

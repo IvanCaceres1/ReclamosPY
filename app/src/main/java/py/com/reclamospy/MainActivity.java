@@ -18,7 +18,7 @@ import android.widget.Toast;
 import adapter.ViewPagerAdapter;
 import util.SlidingTabLayout;
 /**
- * Created by Edwin on 15/02/2015.
+ * Created by Iván on 01/09/2015.
  */
 public class MainActivity extends ActionBarActivity implements View.OnClickListener{
 
@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"Lista","Reclamo","Mapa"};
+    CharSequence Titles[]={"Recientes","Reporte","Mapa"};
     int Numboftabs =3;
 
     @Override
@@ -39,7 +39,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setLogo(R.mipmap.icon_toolbar);
+        toolbar.setPadding(0,23,0,0);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(" Reportes PY");
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
@@ -98,27 +100,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }else{
             return false;
         }
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

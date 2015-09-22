@@ -23,6 +23,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +58,7 @@ import model.Reclamo;
 /**
  * Created by ivan on 9/8/15.
  */
-public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, GoogleMap.OnMyLocationChangeListener{
+public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, GoogleMap.OnMyLocationChangeListener, GoogleMap.OnMyLocationButtonClickListener{
     static final double DEFAULT_LATITUDE = -25.516666700000000000;
     static final double DEFAULT_LONGITUDE= -54.616666699999996000;
     private GoogleMap googleMap;
@@ -102,7 +103,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         googleMap.setMyLocationEnabled(true);
+        googleMap.setOnMyLocationButtonClickListener(this);
 
         //Obtain address from lat,lng
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -119,6 +122,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.setOnMyLocationChangeListener(this);
         }
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(" Reportes PY");
         toolbar.setNavigationIcon(R.mipmap.ic_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener(){
 
@@ -170,19 +174,30 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as\ you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public boolean onOptionsItemSelected (MenuItem item){
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case R.id.action_normal:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                return true;
+
+            case R.id.action_satellite :
+                googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                return true;
+            case R.id.action_hybrid:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                return true;
+
+            case R.id.action_terrain :
+                googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                return true;
+
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
+
+
 
     @Override
     public void onMapClick(LatLng latLng) {
@@ -228,7 +243,32 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 startActivityForResult(takePictureIntent,2);
                 break;
             case R.id.add_send_icon:
-                new HttpAsyncTask().execute("http://civpy.com/reporteS.php");
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        new ContextThemeWrapper(this,android.R.style.Theme_Dialog));
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("Confirma el reclamo ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Si",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // if this button is clicked, close
+                                // current activity
+                                new HttpAsyncTask().execute("http://civpy.com/reporteS.php");
+                            }
+                        })
+                        .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
                 break;
             case R.id.add_upload_icon:
                // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -236,6 +276,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                // startActivityForResult(intent,1);
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                galleryIntent.setType("image/*");
                 startActivityForResult(galleryIntent, 1);
         }
 
@@ -246,16 +287,19 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
         if (requestCode == 2 && resultCode == RESULT_OK) {
             if (data != null) {
+                pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
+                pd.dismiss();
             }else{
                 Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
             }
         }else if (requestCode == 1 && resultCode == RESULT_OK){
             if (data != null) {
+                pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Uri selectedImage = data.getData();
                 String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
@@ -273,6 +317,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
+                pd.dismiss();
             }else{
                 Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
             }
@@ -351,6 +396,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
     @Override
     public void onMyLocationChange(Location location) {
+
         if (isFirsChangeListen) {
             googleMap.clear();
             reclamo.setLat(location.getLatitude() + "");
@@ -379,6 +425,36 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             isFirsChangeListen = false;
         }
 
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+            //TODO: Any custom actions
+            if (googleMap.getMyLocation() != null) {
+                googleMap.clear();
+                reclamo.setLat(googleMap.getMyLocation().getLatitude() + "");
+                reclamo.setLng(googleMap.getMyLocation().getLongitude() + "");
+                try {
+                    addresses = geocoder.getFromLocation(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude(), 1);
+                    if (addresses.size() > 0) {
+                        String address = addresses.get(0).getAddressLine(0);
+                        String city = addresses.get(0).getLocality();
+                        Marker marker = googleMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude()))
+                                .draggable(true)
+                                .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
+                                .snippet(address+", "+city)
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor)));
+                        marker.showInfoWindow();
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude()), 13));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        return false;
     }
 
 

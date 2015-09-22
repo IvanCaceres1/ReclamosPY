@@ -18,6 +18,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -72,6 +75,11 @@ public class Tab2 extends Fragment {
 
 
     @Override
+    public void onCreate(Bundle saveInstanceState){
+        super.onCreate(saveInstanceState);
+        setHasOptionsMenu(true);
+    }
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // inflat and return the layout
@@ -92,6 +100,7 @@ public class Tab2 extends Fragment {
         }
 
         googleMap = mMapView.getMap();
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
@@ -100,8 +109,6 @@ public class Tab2 extends Fragment {
         }else {
             Toast.makeText(getActivity().getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
-
-
         return v;
     }
     /*
@@ -181,6 +188,37 @@ public class Tab2 extends Fragment {
         mMapView.onLowMemory();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+
+        switch (item.getItemId()){
+            case R.id.action_normal:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                return true;
+
+            case R.id.action_satellite :
+                googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                return true;
+            case R.id.action_hybrid:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                return true;
+
+            case R.id.action_terrain :
+                googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
     /**
      * Calculate elapsed time.. Hace 1 hora, 30 minutos, 5 dias
      * @param item
@@ -218,6 +256,7 @@ public class Tab2 extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            latLngList.clear();
             pd= ProgressDialog.show(getActivity(), "Por favor espere !","Obteniendo datos...", true);
             pd.setCancelable(true);
             pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -255,7 +294,7 @@ public class Tab2 extends Fragment {
                         reclamo.setLng(c.getString(TAG_LONG));
                         reclamo.setSubcategoria(c.getString(TAG_SUBCATEGORIA));
                         String fecha = c.getString(TAG_FECHA);
-                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        DateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date d = newDateFormat.parse(fecha);
 
                         reclamo.setFecha(d);
@@ -286,21 +325,21 @@ public class Tab2 extends Fragment {
                     double longitude = Double.parseDouble(reclamo.getLng());
                     MarkerOptions marker = null;
                     MarkerOptions icon = null;
-                    if (reclamo.getCategoria().equals("AGUA")) {
+                    if (reclamo.getCategoria().equals("Agua")) {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                         .snippet(calculateElapsedTime(reclamo.getFecha()));
                         marker.icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                         googleMap.addMarker(marker);
-                    } else if (reclamo.getCategoria().equals("ENERGIA")) {
+                    } else if (reclamo.getCategoria().equals("Energia")) {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                                 .snippet(calculateElapsedTime(reclamo.getFecha()));
                         marker.icon(BitmapDescriptorFactory
                                 .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                         googleMap.addMarker(marker);
-                    } else if (reclamo.getCategoria().equals("VIA PUBLICA")) {
+                    } else if (reclamo.getCategoria().equals("Via publica")) {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                                 .snippet(calculateElapsedTime(reclamo.getFecha()));
