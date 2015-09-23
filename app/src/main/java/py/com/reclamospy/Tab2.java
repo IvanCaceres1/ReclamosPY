@@ -329,23 +329,20 @@ public class Tab2 extends Fragment {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                         .snippet(calculateElapsedTime(reclamo.getFecha()));
-                        marker.icon(BitmapDescriptorFactory
-                                .defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        marker.icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue));
                         googleMap.addMarker(marker);
                     } else if (reclamo.getCategoria().equals("Energia")) {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                                 .snippet(calculateElapsedTime(reclamo.getFecha()));
-                        marker.icon(BitmapDescriptorFactory
-                                .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        marker.icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow));
                         googleMap.addMarker(marker);
                     } else if (reclamo.getCategoria().equals("Via publica")) {
                         marker = new MarkerOptions().position(
                                 new LatLng(latitude, longitude)).title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                                 .snippet(calculateElapsedTime(reclamo.getFecha()));
 
-                        marker.icon(BitmapDescriptorFactory
-                                .defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                        marker.icon(BitmapDescriptorFactory.fromResource(R.mipmap.marker_red));
                         googleMap.addMarker(marker);
                     }
                 }

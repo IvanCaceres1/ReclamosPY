@@ -20,7 +20,7 @@ import util.SlidingTabLayout;
 /**
  * Created by Iván on 01/09/2015.
  */
-public class MainActivity extends ActionBarActivity implements View.OnClickListener{
+public class MainActivity extends ActionBarActivity{
 
     Toolbar toolbar;
     ViewPager pager;
@@ -91,20 +91,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
 
-    public boolean checkNetwork(){
+    public boolean checkNetwork() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isAvailable()
                 && connectivityManager.getActiveNetworkInfo().isConnected()) {
             return true;
-        }else{
+        } else {
             return false;
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(this, ReportTypeSelection.class);
-        startActivity(intent);
     }
 }

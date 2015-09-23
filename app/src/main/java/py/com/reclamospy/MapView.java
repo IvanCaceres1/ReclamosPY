@@ -22,6 +22,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -63,7 +65,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     static final double DEFAULT_LONGITUDE= -54.616666699999996000;
     private GoogleMap googleMap;
     private Toolbar toolbar;
-    private float markerColor;
+    private BitmapDescriptor markerColor;
     private Reclamo reclamo;
     //Reverse geocoding result //
     private List<Address> addresses;
@@ -93,14 +95,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         reclamo = (Reclamo) getIntent().getSerializableExtra("reclamo");
         reclamo.setLat(DEFAULT_LATITUDE + "");
         reclamo.setLng(DEFAULT_LONGITUDE + "");
-        if (reclamo.getCategoria().equals("AGUA")){
-            markerColor = BitmapDescriptorFactory.HUE_BLUE;
-        }else if  (reclamo.getCategoria().equals("ENERGIA")){
-            markerColor = BitmapDescriptorFactory.HUE_YELLOW;
-        }else{
-            markerColor = BitmapDescriptorFactory.HUE_MAGENTA;
-        }
 
+        if (reclamo.getCategoria().equals("Agua")){
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+        }else if  (reclamo.getCategoria().equals("Energia")){
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+        }else{
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+        }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -204,6 +206,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         if (!checkNetwork()) {
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
+        if (reclamo.getCategoria().equals("Agua")){
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+        }else if  (reclamo.getCategoria().equals("Energia")){
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+        }else{
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+        }
         googleMap.clear();
         reclamo.setLat(latLng.latitude + "");
         reclamo.setLng(latLng.longitude + "");
@@ -220,8 +229,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                         .draggable(true)
                         .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                         .snippet(address+", "+city)
-                        .icon(BitmapDescriptorFactory
-                                .defaultMarker(markerColor)));
+                        .icon(markerColor));
                 marker.showInfoWindow();
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 13));
             }
@@ -290,7 +298,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
                 pd.dismiss();
@@ -313,7 +321,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 String imgDecodableString = cursor.getString(columnIndex);
                 Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
@@ -327,6 +335,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     public void obtainAddressFromGPS(){
         try {
             addresses = geocoder.getFromLocation(DEFAULT_LATITUDE,DEFAULT_LONGITUDE,1);
+            if (reclamo.getCategoria().equals("Agua")){
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+            }else if  (reclamo.getCategoria().equals("Energia")){
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+            }else{
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+            }
             if (addresses.size() > 0){
                 String address = addresses.get(0).getAddressLine(0);
                 String city = addresses.get(0).getLocality();
@@ -338,8 +353,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                         .draggable(true)
                         .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                         .snippet(address+", "+city)
-                        .icon(BitmapDescriptorFactory
-                                .defaultMarker(markerColor)));
+                        .icon(markerColor));
                 marker.showInfoWindow();
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), 13));
             }
@@ -362,7 +376,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("foto",reclamo.getFoto());
+            String encodeBase64 = null;
+            if (reclamo.getFoto() != null) {
+                encodeBase64 = Base64.encodeToString(reclamo.getFoto(), Base64.DEFAULT);
+            }
+            jsonObject.put("foto", encodeBase64);
             jsonObject.put("RP_Group", reclamo.getCategoria());
             jsonObject.put("RP_Category", reclamo.getSubcategoria());
             jsonObject.put("latitud", reclamo.getLat());
@@ -401,6 +419,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.clear();
             reclamo.setLat(location.getLatitude() + "");
             reclamo.setLng(location.getLongitude() + "");
+            if (reclamo.getCategoria().equals("Agua")){
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+            }else if  (reclamo.getCategoria().equals("Energia")){
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+            }else{
+                markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+            }
             try {
                 addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addresses.size() > 0) {
@@ -414,8 +439,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                             .draggable(true)
                             .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                             .snippet(address+", "+city)
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor)));
+                             .icon(markerColor));
                     marker.showInfoWindow();
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 13));
                 }
@@ -434,6 +458,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 googleMap.clear();
                 reclamo.setLat(googleMap.getMyLocation().getLatitude() + "");
                 reclamo.setLng(googleMap.getMyLocation().getLongitude() + "");
+                if (reclamo.getCategoria().equals("Agua")){
+                    markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+                }else if  (reclamo.getCategoria().equals("Energia")){
+                    markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+                }else{
+                    markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+                }
                 try {
                     addresses = geocoder.getFromLocation(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude(), 1);
                     if (addresses.size() > 0) {
@@ -444,8 +475,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                                 .draggable(true)
                                 .title(reclamo.getCategoria()+" - "+reclamo.getSubcategoria())
                                 .snippet(address+", "+city)
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor)));
+                                 .icon(markerColor));
                         marker.showInfoWindow();
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude()), 13));
                     }

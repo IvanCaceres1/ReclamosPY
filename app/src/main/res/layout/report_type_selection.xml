@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
+        android:layout_gravity="right"
+        android:layout_marginTop="70dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginRight="20dp">
+        <ImageButton
+            android:layout_width="159dp"
+            android:layout_height="159dp"
+            android:background="@null"
+            android:src="@mipmap/agua"
+            android:scaleType="fitXY"
+            android:layout_marginTop="20dp"
+
+            android:id="@+id/aguaButton"
+            />
+        <ImageButton
+            android:layout_width="159dp"
+            android:layout_height="159dp"
+            android:background="@null"
+            android:layout_marginLeft="8dp"
+            android:src="@mipmap/energia"
+            android:id="@+id/energiaButton"
+            android:layout_marginTop="20dp"
+            android:scaleType="fitXY"/>
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="0dp">
+        <ImageButton
+            android:layout_width="157dp"
+            android:layout_height="157dp"
+            android:background="@null"
+            android:layout_marginLeft="8dp"
+            android:id="@+id/viapublicaButton"
+            android:src="@mipmap/incidentes"
+            android:scaleType="fitXY"/>
+
+     </LinearLayout>
+</LinearLayout>
