@@ -231,7 +231,6 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                         .snippet(address+", "+city)
                         .icon(markerColor));
                 marker.showInfoWindow();
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude,latLng.longitude), 13));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -297,8 +296,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             if (data != null) {
                 pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap bitmapResized = Bitmap.createScaledBitmap(photo, 800, 600, true);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.JPEG, 95,   bos);
+                bitmapResized.compress(Bitmap.CompressFormat.JPEG, 100,   bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
                 pd.dismiss();
@@ -322,7 +322,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 cursor.close();
                 Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mBitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream);
+                mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
