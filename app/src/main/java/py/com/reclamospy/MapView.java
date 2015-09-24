@@ -58,7 +58,7 @@ import java.util.Locale;
 import model.Reclamo;
 
 /**
- * Created by ivan on 9/8/15.
+ * Created by ivan on 95.
  */
 public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, GoogleMap.OnMyLocationChangeListener, GoogleMap.OnMyLocationButtonClickListener{
     static final double DEFAULT_LATITUDE = -25.516666700000000000;
@@ -298,7 +298,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                photo.compress(Bitmap.CompressFormat.JPEG, 95,   bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
                 pd.dismiss();
@@ -319,9 +319,10 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
                 Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                mBitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream);
                 byte[] imageInByte = stream.toByteArray();
                 reclamo.setFoto(imageInByte);
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
