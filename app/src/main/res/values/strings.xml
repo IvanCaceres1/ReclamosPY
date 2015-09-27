@@ -7,4 +7,6 @@
     <string name="action_normal">Normal</string>
     <string name="action_terrain">Terreno</string>
     <string name="action_hybrid">Hibrido </string>
+    <string name="upload_report">Enviando reporte</string>
+    <string name="content_title">Enviando reporte</string>
 </resources>

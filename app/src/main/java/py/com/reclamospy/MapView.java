@@ -42,7 +42,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -74,6 +73,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     boolean isFirsChangeListen;
     private FloatingActionButton cameraBtn,sendBtn,uploadBtn;
     ProgressDialog pd,pdLoadMap;
+
+    private NotificationHelper mNotificationHelper;
 
     @Override
     protected void onCreate(Bundle saveInstanceState){
@@ -126,13 +127,14 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(" Reportes PY");
         toolbar.setNavigationIcon(R.mipmap.ic_arrow);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+        mNotificationHelper = new NotificationHelper(this.getBaseContext());
     }
 
 
@@ -296,9 +298,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             if (data != null) {
                 pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-                Bitmap bitmapResized = Bitmap.createScaledBitmap(photo, 800, 600, true);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bitmapResized.compress(Bitmap.CompressFormat.JPEG, 100,   bos);
+                photo.compress(Bitmap.CompressFormat.JPEG, 100,   bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
                 pd.dismiss();
@@ -490,10 +491,16 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
 
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        /*Instantiate notification helper */
+
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            pd = ProgressDialog.show(MapView.this, "Por favor espere !","Enviando reporte...", true);
+            mNotificationHelper.createNotification();
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+  //          pd = ProgressDialog.show(MapView.this, "Por favor espere !","Enviando reporte...", true);
 
         }
         @Override
@@ -501,13 +508,18 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             return POST(urls[0],reclamo);
         }
         // onPostExecute displays the results of the AsyncTask.
+
+        protected void onProgressUpdate(Integer... progress) {
+            //This method runs on the UI thread, it receives progress updates
+            //from the background thread and publishes them to the status bar
+            mNotificationHelper.progressUpdate(progress[0]);
+        }
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Reporte enviado!" + result, Toast.LENGTH_LONG).show();
-            pd.dismiss();
-            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
+            mNotificationHelper.completed();
+         //   pd.dismiss();
+
         }
     }
 }
