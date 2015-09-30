@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
@@ -47,10 +48,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,8 +77,8 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     //Set marker at currrent position and set location change listener to null
     boolean isFirsChangeListen;
     private FloatingActionButton cameraBtn,sendBtn,uploadBtn;
-    ProgressDialog pd,pdLoadMap;
-
+    ProgressDialog pd;
+    String mCurrentPhotoPath;
     private NotificationHelper mNotificationHelper;
 
     @Override
@@ -248,8 +253,9 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
         switch(v.getId()){
             case R.id.add_camera_icon:
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(takePictureIntent,2);
+                /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent,2);*/
+
                 break;
             case R.id.add_send_icon:
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -290,48 +296,92 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
 
     }
+    /*TODO Quitar fotos en buena calidad pero no mayor a  */
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (!checkNetwork()) {
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
         if (requestCode == 2 && resultCode == RESULT_OK) {
             if (data != null) {
-                pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpeg");
+                Bitmap bitmap = decodeSampledBitmapFromFile(file.getAbsolutePath(), 1000, 700);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.JPEG, 100,   bos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-                pd.dismiss();
-            }else{
-                Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
-            }
-        }else if (requestCode == 1 && resultCode == RESULT_OK){
-            if (data != null) {
-                pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-                // Get the cursor
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String imgDecodableString = cursor.getString(columnIndex);
-                cursor.close();
-                Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                byte[] imageInByte = stream.toByteArray();
-                reclamo.setFoto(imageInByte);
+               /* pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
+                reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-                pd.dismiss();
-            }else{
-                Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
+                pd.dismiss();*/
+                //Check if your application folder exists in the external storage, if not create it:
+
+                } else {
+                    Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
+                }
+            } else if (requestCode == 1 && resultCode == RESULT_OK) {
+                if (data != null) {
+                    pd = ProgressDialog.show(MapView.this, "Por favor espere !", "Cargando imagen...", true);
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                    // Get the cursor
+                    Cursor cursor = getContentResolver().query(selectedImage,
+                            filePathColumn, null, null, null);
+                    // Move to first row
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String imgDecodableString = cursor.getString(columnIndex);
+                    cursor.close();
+                    Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                    byte[] imageInByte = stream.toByteArray();
+                    reclamo.setFoto(imageInByte);
+                    Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
+                    pd.dismiss();
+                } else {
+                    Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
+                }
             }
         }
+
+    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight)
+    { // BEST QUALITY MATCH
+
+        //First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+
+        // Calculate inSampleSize, Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        int inSampleSize = 1;
+
+        if (height > reqHeight)
+        {
+            inSampleSize = Math.round((float)height / (float)reqHeight);
+        }
+        int expectedWidth = width / inSampleSize;
+
+        if (expectedWidth > reqWidth)
+        {
+            //if(Math.round((float)width / (float)reqWidth) > inSampleSize) // If bigger SampSize..
+            inSampleSize = Math.round((float)width / (float)reqWidth);
+        }
+
+        options.inSampleSize = inSampleSize;
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+
+        return BitmapFactory.decodeFile(path, options);
     }
 
     public void obtainAddressFromGPS(){
