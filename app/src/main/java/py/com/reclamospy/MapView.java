@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -102,11 +104,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         reclamo.setLng(DEFAULT_LONGITUDE + "");
 
         if (reclamo.getCategoria().equals("Agua")){
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
         }else if  (reclamo.getCategoria().equals("Energia")){
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
         }else{
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
         }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -213,11 +215,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
         if (reclamo.getCategoria().equals("Agua")){
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
         }else if  (reclamo.getCategoria().equals("Energia")){
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
         }else{
-            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);*/
+            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
         }
         googleMap.clear();
         reclamo.setLat(latLng.latitude + "");
@@ -295,21 +297,21 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent, 1);
+                startActivityForResult(galleryIntent, 2);
         }
 
     }
     /*TODO Quitar fotos en buena calidad pero no mayor a  */
     public void onActivityResult(int requestCode,int resultCode,Intent data){
         if (resultCode == RESULT_OK) {
-            switch(requestCode){
+            switch (requestCode) {
                 case TAKE_PHOTO_CODE:
                     final File file = getTempFile(this);
                     try {
                         Bitmap captureBmp = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(file));
                         // do whatever you want with the bitmap (Resize, Rename, Add To Gallery, etc)
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        captureBmp.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
+                        captureBmp.compress(Bitmap.CompressFormat.JPEG, 90, bos);
                         reclamo.setFoto(bos.toByteArray());
                         Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
                     } catch (FileNotFoundException e) {
@@ -318,69 +320,33 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                         e.printStackTrace();
                     }
                     break;
+                case 2:
+                   if (data != null) {
+                       pd = ProgressDialog.show(MapView.this, "Por favor espere !", "Cargando imagen...", true);
+                       Uri selectedImage = data.getData();
+                       String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                       // Get the cursor
+                       Cursor cursor = getContentResolver().query(selectedImage,
+                               filePathColumn, null, null, null);
+                       // Move to first row
+                       cursor.moveToFirst();
+
+                       int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                       String imgDecodableString = cursor.getString(columnIndex);
+                       cursor.close();
+                       Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
+                       ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                       mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                       byte[] imageInByte = stream.toByteArray();
+                       reclamo.setFoto(imageInByte);
+                       Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
+                       pd.dismiss();
+                   } else {
+                       Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
+                   }
             }
-        }
-
-
-     /*   if (!checkNetwork()) {
-            Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
-        }
-
-
-        if (requestCode == 2 && resultCode == RESULT_OK) {
-            if (data != null) {
-                //File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpeg");
-                //Bitmap bitmap = decodeSampledBitmapFromFile(file.getAbsolutePath(), 1000, 700);
-                final File file = getTempFile(this);
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(file));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
-                reclamo.setFoto(bos.toByteArray());
-                Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-
-               /* pd = ProgressDialog.show(MapView.this, "Por favor espere !","Cargando imagen...", true);
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
-                reclamo.setFoto(bos.toByteArray());
-                Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-                pd.dismiss();*//*
-                //Check if your application folder exists in the external storage, if not create it:
-
-                } else {
-                    Toast.makeText(getBaseContext(), "Data is null from TAKE ", Toast.LENGTH_LONG).show();
-                }
-            } else if (requestCode == 1 && resultCode == RESULT_OK) {
-                if (data != null) {
-                    pd = ProgressDialog.show(MapView.this, "Por favor espere !", "Cargando imagen...", true);
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-                    // Get the cursor
-                    Cursor cursor = getContentResolver().query(selectedImage,
-                            filePathColumn, null, null, null);
-                    // Move to first row
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String imgDecodableString = cursor.getString(columnIndex);
-                    cursor.close();
-                    Bitmap mBitmap = BitmapFactory.decodeFile(imgDecodableString);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                    byte[] imageInByte = stream.toByteArray();
-                    reclamo.setFoto(imageInByte);
-                    Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-                    pd.dismiss();
-                } else {
-                    Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
-                }
-            }*/
+          }
         }
 
     private File getTempFile(Context context){
