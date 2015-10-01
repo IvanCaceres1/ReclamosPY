@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -30,14 +29,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -46,16 +46,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -80,7 +79,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     ProgressDialog pd;
     String mCurrentPhotoPath;
     private NotificationHelper mNotificationHelper;
-
+    private static final int TAKE_PHOTO_CODE = 1;
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
@@ -103,11 +102,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         reclamo.setLng(DEFAULT_LONGITUDE + "");
 
         if (reclamo.getCategoria().equals("Agua")){
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);*/
         }else if  (reclamo.getCategoria().equals("Energia")){
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);*/
         }else{
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);*/
         }
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -131,7 +130,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
         }
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(" Reportes PY");
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow);
+        /*toolbar.setNavigationIcon(R.mipmap.ic_arrow);*/
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -214,11 +213,11 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
         if (reclamo.getCategoria().equals("Agua")){
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);*/
         }else if  (reclamo.getCategoria().equals("Energia")){
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);*/
         }else{
-            markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
+            /*markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);*/
         }
         googleMap.clear();
         reclamo.setLat(latLng.latitude + "");
@@ -255,6 +254,10 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             case R.id.add_camera_icon:
                 /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent,2);*/
+
+                final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(getTempFile(this)) );
+                startActivityForResult(intent, TAKE_PHOTO_CODE);
 
                 break;
             case R.id.add_send_icon:
@@ -298,13 +301,43 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     }
     /*TODO Quitar fotos en buena calidad pero no mayor a  */
     public void onActivityResult(int requestCode,int resultCode,Intent data){
-        if (!checkNetwork()) {
+        if (resultCode == RESULT_OK) {
+            switch(requestCode){
+                case TAKE_PHOTO_CODE:
+                    final File file = getTempFile(this);
+                    try {
+                        Bitmap captureBmp = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(file));
+                        // do whatever you want with the bitmap (Resize, Rename, Add To Gallery, etc)
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        captureBmp.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
+                        reclamo.setFoto(bos.toByteArray());
+                        Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
+        }
+
+
+     /*   if (!checkNetwork()) {
             Toast.makeText(getBaseContext(), "Sin conexión a internet !!!", Toast.LENGTH_LONG).show();
         }
+
+
         if (requestCode == 2 && resultCode == RESULT_OK) {
             if (data != null) {
-                File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpeg");
-                Bitmap bitmap = decodeSampledBitmapFromFile(file.getAbsolutePath(), 1000, 700);
+                //File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpeg");
+                //Bitmap bitmap = decodeSampledBitmapFromFile(file.getAbsolutePath(), 1000, 700);
+                final File file = getTempFile(this);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(file));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
                 reclamo.setFoto(bos.toByteArray());
@@ -316,7 +349,7 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 photo.compress(Bitmap.CompressFormat.JPEG, 90,   bos);
                 reclamo.setFoto(bos.toByteArray());
                 Toast.makeText(getBaseContext(), "Imagen agregada con exito ! ", Toast.LENGTH_LONG).show();
-                pd.dismiss();*/
+                pd.dismiss();*//*
                 //Check if your application folder exists in the external storage, if not create it:
 
                 } else {
@@ -347,8 +380,17 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 } else {
                     Toast.makeText(getBaseContext(), "Data is null from UPLOAD !! ", Toast.LENGTH_LONG).show();
                 }
-            }
+            }*/
         }
+
+    private File getTempFile(Context context){
+        //it will return /sdcard/image.tmp
+        final File path = new File( Environment.getExternalStorageDirectory(), context.getPackageName() );
+        if(!path.exists()){
+            path.mkdir();
+        }
+        return new File(path, "image.tmp");
+    }
 
     public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight)
     { // BEST QUALITY MATCH
@@ -387,13 +429,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
     public void obtainAddressFromGPS(){
         try {
             addresses = geocoder.getFromLocation(DEFAULT_LATITUDE,DEFAULT_LONGITUDE,1);
-            if (reclamo.getCategoria().equals("Agua")){
+           /* if (reclamo.getCategoria().equals("Agua")){
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
             }else if  (reclamo.getCategoria().equals("Energia")){
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
             }else{
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
-            }
+            }*/
             if (addresses.size() > 0){
                 String address = addresses.get(0).getAddressLine(0);
                 String city = addresses.get(0).getLocality();
@@ -471,13 +513,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
             googleMap.clear();
             reclamo.setLat(location.getLatitude() + "");
             reclamo.setLng(location.getLongitude() + "");
-            if (reclamo.getCategoria().equals("Agua")){
+            /*if (reclamo.getCategoria().equals("Agua")){
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
             }else if  (reclamo.getCategoria().equals("Energia")){
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
             }else{
                 markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
-            }
+            }*/
             try {
                 addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addresses.size() > 0) {
@@ -510,13 +552,13 @@ public class MapView extends ActionBarActivity implements GoogleMap.OnMapClickLi
                 googleMap.clear();
                 reclamo.setLat(googleMap.getMyLocation().getLatitude() + "");
                 reclamo.setLng(googleMap.getMyLocation().getLongitude() + "");
-                if (reclamo.getCategoria().equals("Agua")){
+                /*if (reclamo.getCategoria().equals("Agua")){
                     markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_blue);
                 }else if  (reclamo.getCategoria().equals("Energia")){
                     markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_yellow);
                 }else{
                     markerColor = BitmapDescriptorFactory.fromResource(R.mipmap.marker_red);
-                }
+                }*/
                 try {
                     addresses = geocoder.getFromLocation(googleMap.getMyLocation().getLatitude(), googleMap.getMyLocation().getLongitude(), 1);
                     if (addresses.size() > 0) {
