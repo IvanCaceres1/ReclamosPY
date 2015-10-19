@@ -1,4 +1,4 @@
-package py.com.reclamospy;
+    package py.com.reclamospy;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -36,16 +36,17 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by Edwin on 15/02/2015.
+ * Created by Iván on 01/09/2015.
  */
 public class Tab1 extends ListFragment {
 
-    // URL to get contacts JSO
     private static String url = "http://civpy.com/SelectAll_v2.php";
     private ProgressDialog pd = null;
-    // JSON Node names
-    private static final String TAG_LATLONGS = "reclamo";
 
+    /*
+     * JSON Node names
+     */
+    private static final String TAG_LATLONGS = "reclamo";
     private static final String TAG_ID = "reporte_id";
     private static final String TAG_IMEI = "IMEI";
     private static final String TAG_LAT = "latitud";
@@ -56,13 +57,10 @@ public class Tab1 extends ListFragment {
     private static final String TAG_DATE = "Created";
     private static final String TAG_ADDRESS= "address";
 
-    // contacts JSONArray
-    JSONArray latlngs = null;
-    //Reverse geocoding result //
+    private JSONArray latlngs = null;
     private List<Address> addresses;
-    Geocoder geocoder;
-    // Hashmap for ListView
-    ArrayList<HashMap<String, String>> latLngList;
+    private Geocoder geocoder;
+    private ArrayList<HashMap<String, String>> latLngList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,12 +140,8 @@ public class Tab1 extends ListFragment {
         protected Void doInBackground(Void... arg0) {
             // Creating service handler class instance
             ServiceHandler sh = new ServiceHandler();
-
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
-
-            Log.d("Response: ", "> " + jsonStr);
-
             if (jsonStr != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
@@ -205,7 +199,9 @@ public class Tab1 extends ListFragment {
 
             return null;
         }
-
+        /*
+         * Obtain address from lat and long
+         */
         public String obtainAddressFromGPS(double latitud, double longitud) throws IOException {
                 addresses = geocoder.getFromLocation(latitud,longitud,1);
                 String address = null;
@@ -217,6 +213,11 @@ public class Tab1 extends ListFragment {
             return  address +", "+ city;
         }
 
+        /*
+         * Calculate elapsed time, eg:
+         * *hace 1 hora
+         * *hacer 1 minuto
+         */
         public String calculateElapsedTime(Date item){
             Date datePosted = item;
             Date current = new Date();
@@ -241,6 +242,9 @@ public class Tab1 extends ListFragment {
             }
             return returnStr;
         }
+        /*
+         * Fucntion executed after doInBackground
+         */
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);

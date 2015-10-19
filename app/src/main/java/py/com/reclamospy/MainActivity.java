@@ -35,7 +35,9 @@ public class MainActivity extends ActionBarActivity{
         setContentView(R.layout.activity_main);
 
 
-        // Creating The Toolbar and setting it as the Toolbar for the activity
+        /*
+         * Creating The Toolbar and setting it as the Toolbar for the activity
+         */
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setLogo(R.mipmap.icon_toolbar);
@@ -43,19 +45,22 @@ public class MainActivity extends ActionBarActivity{
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(" Reportes PY");
 
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        /*
+         * Creating and asign The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+         */
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
-
-
-        // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
         pager.setCurrentItem(1);
-        // Assiging the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        /*
+         * To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+         */
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        /*
+         * Setting Custom Color for the Scroll bar indicator of the Tab View
+         */
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
@@ -84,13 +89,17 @@ public class MainActivity extends ActionBarActivity{
             }
         });
 
-        // Setting the ViewPager For the SlidingTabsLayout
+        /*
+         * Setting the ViewPager For the SlidingTabsLayout
+         */
         tabs.setViewPager(pager);
         pager.setOffscreenPageLimit(3);
 
     }
 
-
+    /*
+     * Check network connected and internet acceess..
+     */
     public boolean checkNetwork() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager.getActiveNetworkInfo() != null

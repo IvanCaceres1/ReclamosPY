@@ -50,12 +50,14 @@ import java.util.HashMap;
 import model.Reclamo;
 
 /**
- * Created by Edwin on 15/02/2015.
+ * Created by Iván on 1/09/2015.
  */
 public class Tab2 extends Fragment {
     private static String url = "http://civpy.com/SelectAll_v2.php";
 
-    // JSON Node names
+    /*
+     * JSON Node names
+     */
     private static final String TAG_LATLONGS = "reclamo";
 
     private static final String TAG_LAT = "latitud";
@@ -63,14 +65,12 @@ public class Tab2 extends Fragment {
     private static final String TAG_CATEGORIA= "RP_Group";
     private static final String TAG_SUBCATEGORIA = "RP_Category";
     private static final String TAG_FECHA = "fecha";
-    JSONArray latlngs = null;
-    ArrayList<Reclamo> latLngList;
+    private JSONArray latlngs = null;
+    private ArrayList<Reclamo> latLngList;
     private boolean isFirsChangeListen;
-
-
-    MapView mMapView;
+    private MapView mMapView;
     private GoogleMap googleMap;
-    Toolbar toolbar;
+    private Toolbar toolbar;
     private ProgressDialog pd = null;
 
 
@@ -82,7 +82,6 @@ public class Tab2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // inflat and return the layout
         View v = inflater.inflate(R.layout.tab_2, container,
                 false);
         toolbar = (Toolbar) v.findViewById(R.id.tool_bar);
@@ -104,6 +103,9 @@ public class Tab2 extends Fragment {
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
+        /*
+         * Checking network connected and internet access
+         */
         if (checkNetwork()) {
             checkForLocationService();
         }else {
@@ -112,9 +114,8 @@ public class Tab2 extends Fragment {
         return v;
     }
     /*
-    *  Check network availability and connected
-    */
-
+     *  Obtain current location
+     */
     public void checkForLocationService(){
         LocationManager lm = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||

@@ -19,12 +19,12 @@ import model.Reclamo;
  * Created by Edwin on 15/02/2015.
  */
 public class Tab3 extends Fragment implements View.OnClickListener{
-    Toolbar toolbar;
-    Reclamo reclamo;
-    ImageButton agua;
-    ImageButton energia;
-    ImageButton viaPublica;
-    ImageButton emergencia;
+    private Toolbar toolbar;
+    private Reclamo reclamo;
+    private ImageButton agua;
+    private ImageButton energia;
+    private ImageButton viaPublica;
+    private ImageButton emergencia;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,32 +50,23 @@ public class Tab3 extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("reclamo",reclamo);
+        Intent intent = new Intent(getActivity(), ReportSubTypeSelection.class);
+        intent.putExtras(bundle);
         switch(v.getId()){
             case R.id.aguaButton:
                 reclamo.setCategoria("Agua");
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("reclamo",reclamo);
-                Intent intent = new Intent(getActivity(), ReportSubTypeSelection.class);
-                intent.putExtras(bundle);
                 startActivity(intent);
                 break;
             case R.id.energiaButton:
                 reclamo.setCategoria("Energia");
-                Bundle bundle2 = new Bundle();
-                bundle2.putSerializable("reclamo",reclamo);
-                Intent intent2 = new Intent(getActivity(), ReportSubTypeSelection.class);
-                intent2.putExtras(bundle2);
-                startActivity(intent2);
+                startActivity(intent);
                 break;
             case R.id.viapublicaButton:
                 reclamo.setCategoria("Via publica");
-                Bundle bundle3 = new Bundle();
-                bundle3.putSerializable("reclamo",reclamo);
-                Intent intent3 = new Intent(getActivity(), ReportSubTypeSelection.class);
-                intent3.putExtras(bundle3);
-                startActivity(intent3);
+                startActivity(intent);
                 break;
         }
-
     }
 }
