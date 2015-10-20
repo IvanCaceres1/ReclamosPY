@@ -3,29 +3,16 @@
     android:layout_height="fill_parent"
     android:padding="6dip"
     android:orientation="horizontal">
+    <ImageView android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/image_view"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_weight="0.35">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="right">
-            <TextView
-                android:id="@+id/fecha"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text=""/>
-            <TextView
-                android:id="@+id/elapsedTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text=""/>
-        </LinearLayout>
+        android:layout_weight="0.35"
+        android:layout_marginLeft="20dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -40,6 +27,13 @@
             android:minLines="1"
             android:ellipsize="end"
             android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/elapsedTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="20dp"
+                android:text=""/>
         </LinearLayout>
         <TextView
              android:id="@+id/subcategoria"

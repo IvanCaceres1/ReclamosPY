@@ -1,8 +1,9 @@
     package py.com.reclamospy;
 
-import android.app.ProgressDialog;
+    import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -11,15 +12,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,11 +57,17 @@ public class Tab1 extends ListFragment {
     private static final String TAG_FECHA = "fecha";
     private static final String TAG_DATE = "Created";
     private static final String TAG_ADDRESS= "address";
+    private static final String FIRST_LETTER= "firstLetter";
 
     private JSONArray latlngs = null;
     private List<Address> addresses;
     private Geocoder geocoder;
     private ArrayList<HashMap<String, String>> latLngList;
+
+    private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
+    private TextDrawable.IBuilder mDrawableBuilder;
+    private static final int HIGHLIGHT_COLOR = 0x999be6ff;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +192,8 @@ public class Tab1 extends ListFragment {
                         reclamo.put(TAG_FECHA,calculateElapsedTime(d));
                         reclamo.put(TAG_ADDRESS,addressFromGeocoder);
 
+                        reclamo.put(FIRST_LETTER, categoria.substring(0));
+
                         // adding contact to contact list
                         latLngList.add(reclamo);
                     }
@@ -249,9 +258,36 @@ public class Tab1 extends ListFragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             if (latLngList != null ) {
+
                 ListAdapter adapter = new SimpleAdapter(
                         getActivity(), latLngList,
-                        R.layout.list_item, new String[]{TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE,TAG_ADDRESS}, new int[]{R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha,R.id.address});
+                        R.layout.list_item, new String[]{TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE,TAG_ADDRESS}, new int[]{R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha,R.id.address}) {
+                    @Override
+                    public View getView (int position, View convertView, ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+
+                        int color = Color.parseColor("#F44336");
+
+                        if (latLngList.get(position).get(TAG_CATEGORIA).equals("Agua")){
+                            color = Color.parseColor("#03A9F4");
+                        }else if(latLngList.get(position).get(TAG_CATEGORIA).equals("Energia")){
+                            color = Color.parseColor("#FFEB3B");
+                        }
+
+                        TextDrawable drawable = TextDrawable.builder()
+                                .buildRect(latLngList.get(position).get(TAG_CATEGORIA).substring(0,1), color);
+
+                        ImageView image = (ImageView) view.findViewById(R.id.image_view);
+                        image.setImageDrawable(drawable);
+
+                        return view;
+                    }
+                };
+
+                /*ListAdapter adapter = new SimpleAdapter(
+                        getActivity(), latLngList,
+                        R.layout.list_item, new String[]{FIRST_LETTER, TAG_CATEGORIA, TAG_SUBCATEGORIA, TAG_FECHA, TAG_DATE,TAG_ADDRESS}, new int[]{R.id.image_view, R.id.categoria, R.id.subcategoria, R.id.elapsedTime, R.id.fecha,R.id.address});*/
+
 
                 setListAdapter(adapter);
             }
@@ -259,5 +295,4 @@ public class Tab1 extends ListFragment {
         }
 
     }
-
 }
